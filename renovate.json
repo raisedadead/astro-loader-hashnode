@@ -1,3 +1,9 @@
 {
-  "extends": ["github>raisedadead/renovate-config"]
+  "extends": ["github>raisedadead/renovate-config"],
+  "packageRules": [
+    {
+      "matchDepTypes": ["engines"],
+      "enabled": false
+    }
+  ]
 }
