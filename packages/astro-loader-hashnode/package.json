@@ -57,11 +57,11 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "astro": "^5.0.0"
+    "astro": "5.9.4"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "node": "24.2.0",
+    "pnpm": "10.12.1"
   },
   "repository": {
     "type": "git",

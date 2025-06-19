@@ -91,7 +91,7 @@ importers:
   packages/astro-loader-hashnode:
     dependencies:
       astro:
-        specifier: ^5.0.0
+        specifier: 5.9.4
         version: 5.9.4(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.8.3)(yaml@2.8.0)
       zod:
         specifier: 3.25.67
