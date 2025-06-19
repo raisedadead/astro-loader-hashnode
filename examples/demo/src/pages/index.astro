@@ -1,0 +1,574 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { publicationHost } from '../content.config';
+
+const blog = await getCollection('blog');
+const drafts = await getCollection('drafts');
+
+// TODO: Add series and search results
+const series: unknown[] = [];
+const searchResults: unknown[] = [];
+
+const sortedPosts = blog.sort((a, b) => 
+  new Date(b.data.publishedAt).getTime() - new Date(a.data.publishedAt).getTime()
+);
+
+const latestPosts = sortedPosts.slice(0, 3);
+
+// Calculate Stats
+const postsWithComments = blog.filter(post => post.data.commentsData?.totalCount > 0).length;
+const postsWithCoAuthors = blog.filter(post => post.data.coAuthors?.length > 0).length;
+const postsWithTOC = blog.filter(post => post.data.tableOfContents?.items?.length > 0).length;
+---
+
+<Layout title="Hashnode Content Demo" description="Showcasing astro-loader-hashnode">
+  <main>
+    <header class="hero">
+      <h1>🚀 Astro Loader Hashnode Demo</h1>
+      <p>Showcasing modular content loading from Hashnode</p>
+      <div class="stats">
+        <div class="stat">
+          <strong>{blog.length}</strong> posts loaded
+        </div>
+        {series.length > 0 && (
+          <div class="stat">
+            <strong>{series.length}</strong> series
+          </div>
+        )}
+        {searchResults.length > 0 && (
+          <div class="stat">
+            <strong>{searchResults.length}</strong> search results
+          </div>
+        )}
+        {drafts.length > 0 && (
+          <div class="stat">
+            <strong>{drafts.length}</strong> drafts
+          </div>
+        )}
+      </div>
+      <div class="enhanced-stats">
+        <div class="enhanced-stat">💬 {postsWithComments} with comments</div>
+        <div class="enhanced-stat">👥 {postsWithCoAuthors} with co-authors</div>
+        <div class="enhanced-stat">📑 {postsWithTOC} with table of contents</div>
+      </div>
+    </header>
+
+    <section class="posts-section">
+      <h2>📝 Latest Blog Posts</h2>
+      <div class="post-grid">
+        {latestPosts.map((post) => (
+          <article class="post-card">
+            <h3 class="post-title">
+              {post.data.title}
+            </h3>
+            <div class="post-meta">
+              By {post.data.author?.name || 'Unknown Author'} • 
+              {new Date(post.data.publishedAt).toLocaleDateString()} • 
+              {post.data.readTimeInMinutes || post.data.readingTime || 'N/A'} min read
+            </div>
+            <p class="post-brief">{post.data.brief}</p>
+            
+            {/* Enhanced Features Display */}
+            <div class="enhanced-features">
+              {post.data.coAuthors && post.data.coAuthors.length > 0 && (
+                <div class="feature-badge">
+                  👥 {post.data.coAuthors.length} co-author{post.data.coAuthors.length > 1 ? 's' : ''}
+                </div>
+              )}
+              {post.data.commentsData && post.data.commentsData.totalCount > 0 && (
+                <div class="feature-badge">
+                  💬 {post.data.commentsData.totalCount} comment{post.data.commentsData.totalCount > 1 ? 's' : ''}
+                </div>
+              )}
+              {post.data.tableOfContents && post.data.tableOfContents.items && post.data.tableOfContents.items.length > 0 && (
+                <div class="feature-badge">
+                  📑 TOC ({post.data.tableOfContents.items.length} items)
+                </div>
+              )}
+              {post.data.series && (
+                <div class="feature-badge">
+                  📚 Series: {post.data.series.name}
+                </div>
+              )}
+            </div>
+
+            {post.data.tags?.length > 0 && (
+              <div class="tags">
+                {post.data.tags.slice(0, 3).map((tag: any) => (
+                  <span class="tag">{tag.name}</span>
+                ))}
+              </div>
+            )}
+            {(post.data.views || 0) > 0 && (
+              <div class="engagement">
+                👀 {post.data.views} views • ⭐ {post.data.reactions || 0} reactions
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+      <div style="text-align:center; margin-top:2rem;">
+        <a href={`https://${publicationHost}`} target="_blank" rel="noopener noreferrer" class="view-all-link">View all posts on Hashnode →</a>
+      </div>
+    </section>
+
+    <section class="loader-showcase">
+      <h2>🔌 Loader Showcase</h2>
+      <div class="config-grid">
+        <div class="config-example">
+          <h3>Posts Loader</h3>
+          <pre><code>{`postsLoader({\n  publicationHost: '${publicationHost}',\n  includeComments: true,\n  includeCoAuthors: true,\n  includeTableOfContents: true,\n  maxPosts: 100,\n})`}</code></pre>
+          <p>Active: {blog.length} posts</p>
+        </div>
+        <div class="config-example">
+          <h3>Drafts Loader</h3>
+          <pre><code>{`draftsLoader({\n  publicationHost: '${publicationHost}',\n  token: '***',\n  maxDrafts: 20,\n})`}</code></pre>
+          <p>{drafts.length > 0 ? `Active: ${drafts.length} drafts` : 'Not enabled'}</p>
+        </div>
+        <div class="config-example">
+          <h3>Series Loader</h3>
+          <pre><code>{`seriesLoader({\n  publicationHost: '${publicationHost}',\n  includePostsPreview: true,\n  maxPostsPerSeries: 10,\n})`}</code></pre>
+          <p>Not enabled in this demo</p>
+        </div>
+        <div class="config-example">
+          <h3>Search Loader</h3>
+          <pre><code>{`searchLoader({\n  publicationHost: '${publicationHost}',\n  searchTerms: ['javascript', 'react', 'typescript', 'astro'],\n  maxResultsPerTerm: 5,\n})`}</code></pre>
+          <p>Not enabled in this demo</p>
+        </div>
+      </div>
+    </section>
+
+    {drafts.length > 0 && (
+      <section class="drafts-section">
+        <h2>📝 Draft Content</h2>
+        <div class="drafts-grid">
+          {drafts.slice(0, 3).map((draft: unknown) => {
+            // Type assertion for draft object
+            const d = draft as { data: { title: string; updatedAt: string | Date } };
+            return (
+              <div class="draft-card">
+                <h4>{d.data.title}</h4>
+                <p>Last updated: {new Date(d.data.updatedAt).toLocaleDateString()}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    )}
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #2563eb, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  .stat {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+  }
+
+  .stat strong {
+    color: #2563eb;
+    font-size: 1.5rem;
+  }
+
+  .posts-section {
+    margin-bottom: 3rem;
+  }
+
+  .posts-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+  }
+
+  .post-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .post-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+  }
+
+  .post-title a {
+    color: #1e293b;
+    text-decoration: none;
+  }
+
+  .post-title a:hover {
+    color: #2563eb;
+  }
+
+  .post-meta {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+  }
+
+  .post-brief {
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .tag {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+  }
+
+  .engagement {
+    font-size: 0.9rem;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+  }
+
+  .enhanced-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .enhanced-stat {
+    background: #f0f9ff;
+    color: #0369a1;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    border: 1px solid #bae6fd;
+  }
+
+  .enhanced-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-badge {
+    background: #ecfdf5;
+    color: #059669;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    border: 1px solid #a7f3d0;
+  }
+
+  .series-section, .search-section, .drafts-section {
+    margin-bottom: 3rem;
+  }
+
+  .series-section h2, .search-section h2, .drafts-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+  }
+
+  .section-description {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .section-description code {
+    background: #f1f5f9;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Consolas', monospace;
+  }
+
+  .series-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .series-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #8b5cf6;
+  }
+
+  .series-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+  }
+
+  .series-card p {
+    color: #64748b;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .series-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #64748b;
+  }
+
+  .search-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .search-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #f59e0b;
+  }
+
+  .search-card h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+  }
+
+  .search-card h4 a {
+    color: #1e293b;
+    text-decoration: none;
+  }
+
+  .search-card h4 a:hover {
+    color: #f59e0b;
+  }
+
+  .search-card p {
+    color: #64748b;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .search-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  .drafts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .draft-card {
+    background: #fefce8;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #fde047;
+    border-left: 4px solid #eab308;
+  }
+
+  .draft-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+  }
+
+  .draft-card p {
+    color: #64748b;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+  }
+
+  .config-example {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .config-example h3 {
+    margin: 0 0 1rem 0;
+    color: #1e293b;
+    font-size: 1.1rem;
+  }
+
+  .config-example pre {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .config-example code {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.85rem;
+    color: #1e293b;
+  }
+
+  .features-overview {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .features-overview h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .feature-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+    font-size: 1.1rem;
+  }
+
+  .feature-card p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.5;
+  }
+
+  .api-info {
+    background: #eff6ff;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #bfdbfe;
+  }
+
+  .api-info h2 {
+    margin: 0 0 1rem 0;
+    color: #1e293b;
+  }
+
+  .config-info p {
+    margin: 0.5rem 0;
+    color: #475569;
+  }
+
+  .loader-showcase {
+    margin-bottom: 2rem;
+  }
+
+  .loader-showcase h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #1e293b;
+  }
+
+  .view-all-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #2563eb;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid #2563eb;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .view-all-link:hover {
+    color: #1e293b;
+    border-color: #1e293b;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+    
+    .post-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>

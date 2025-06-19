@@ -1,0 +1,77 @@
+{
+  "name": "astro-loader-hashnode",
+  "version": "1.0.0",
+  "description": "Astro content loader for seamlessly integrating Hashnode blog posts into your Astro website using the Content Layer API",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./loader": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist coverage",
+    "prepack": "pnpm run build",
+    "release": "echo 'Use semantic-release from root!'"
+  },
+  "packageManager": "pnpm@10.12.1",
+  "keywords": [
+    "astro",
+    "astro-component",
+    "withastro",
+    "astro-loader",
+    "content-loader",
+    "hashnode",
+    "blog",
+    "cms",
+    "content",
+    "content-collections",
+    "static-site-generator",
+    "markdown",
+    "graphql"
+  ],
+  "author": {
+    "name": "Mrugesh Mohapatra",
+    "email": "noreply@mrugesh.dev"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "astro": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raisedadead/astro-loader-hashnode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raisedadead/astro-loader-hashnode/issues"
+  },
+  "homepage": "https://github.com/raisedadead/astro-loader-hashnode#readme",
+  "dependencies": {
+    "zod": "3.25.67"
+  }
+}

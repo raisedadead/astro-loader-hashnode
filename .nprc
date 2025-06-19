@@ -1,0 +1,9 @@
+# np configuration
+cleanup=false
+tests=false
+preview=true
+confirm=true
+releaseDraft=false
+tag=true
+push=true
+anyBranch=false

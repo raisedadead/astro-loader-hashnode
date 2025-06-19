@@ -1,0 +1,34 @@
+name: Lint
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: "Node.js version to use"
+        required: false
+        type: string
+        default: "22"
+
+jobs:
+  lint:
+    name: "Lint Code"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "Setup pnpm"
+        uses: pnpm/action-setup@v4
+
+      - name: "Setup Node.js ${{ inputs.node-version }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "pnpm"
+
+      - name: "Install Dependencies"
+        run: pnpm install
+
+      - name: "Lint Code"
+        run: pnpm run lint

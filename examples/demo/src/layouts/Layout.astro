@@ -1,0 +1,81 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description || "Astro Hashnode Loader Demo"} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .header {
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+      }
+      .post-list {
+        display: grid;
+        gap: 2rem;
+      }
+      .post-card {
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 1.5rem;
+      }
+      .post-title {
+        margin: 0 0 0.5rem 0;
+      }
+      .post-meta {
+        color: #666;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+      }
+      .post-brief {
+        color: #333;
+        margin-bottom: 1rem;
+      }
+      .tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: #f0f0f0;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1><a href="/">Astro Hashnode Demo</a></h1>
+      <p>Demonstrating the Astro Hashnode Loader</p>
+    </div>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+# Source files
+src/
+
+# Development files
+*.test.*
+*.spec.*
+**/*.test.*
+**/*.spec.*
+__tests__/
+test/
+tests/
+coverage/
+dist/*.test.*
+dist/**/*.test.*
+
+# Config files
+eslint.config.js
+tsconfig.json
+vitest.config.ts
+.eslintrc*
+.prettierrc*
+
+# CI/CD
+.github/
+.travis.yml
+.circleci/
+
+# Development tools
+.vscode/
+.idea/
+*.log
+.DS_Store
+
+# Documentation (keep README.md)
+docs/

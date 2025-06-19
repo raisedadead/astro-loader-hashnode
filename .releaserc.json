@@ -1,0 +1,52 @@
+{
+  "tagFormat": "v${version}",
+  "repositoryUrl": "https://github.com/raisedadead/astro-loader-hashnode.git",
+  "branches": [{ "name": "1.x", "range": "1.x", "channel": "1.x" }, { "name": "main" }],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          {
+            "type": "feat",
+            "release": "minor"
+          },
+          {
+            "type": "fix",
+            "release": "patch"
+          },
+          {
+            "type": "perf",
+            "release": "patch"
+          },
+          {
+            "breaking": true,
+            "release": "major"
+          }
+        ]
+      }
+    ],
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md", "packages/astro-loader-hashnode/package.json"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/github",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "pnpm --filter ./packages/astro-loader-hashnode version ${nextRelease.version} --git-tag-version=false",
+        "publishCmd": "pnpm --filter ./packages/astro-loader-hashnode publish --no-git-checks"
+      }
+    ]
+  ]
+}
