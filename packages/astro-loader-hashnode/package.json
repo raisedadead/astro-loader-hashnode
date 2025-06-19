@@ -57,7 +57,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "astro": "5.9.4"
+    "astro": "5.10.0"
   },
   "engines": {
     "node": "20.x || 22.x || 24.x",
