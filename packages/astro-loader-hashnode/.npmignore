@@ -1,35 +1,60 @@
-# Source files
+# Source files and development
 src/
+tests/
+__tests__/
+test/
+coverage/
 
-# Development files
+# Build and dev files
 *.test.*
 *.spec.*
 **/*.test.*
 **/*.spec.*
-__tests__/
-test/
-tests/
-coverage/
 dist/*.test.*
 dist/**/*.test.*
 
 # Config files
-eslint.config.js
-tsconfig.json
-vitest.config.ts
+*.config.js
+*.config.ts
+*.config.mjs
+tsconfig*.json
+vitest.config.*
+jest.config.*
 .eslintrc*
 .prettierrc*
+.editorconfig
+renovate.json
 
-# CI/CD
+# CI/CD and Git
 .github/
 .travis.yml
 .circleci/
+.gitignore
+.gitattributes
 
-# Development tools
+# Development tools and editors
 .vscode/
 .idea/
+.vs/
 *.log
 .DS_Store
+Thumbs.db
 
-# Documentation (keep README.md)
+# Documentation (keep README.md and LICENSE)
 docs/
+CONTRIBUTING.md
+
+# Misc development files
+.nvmrc
+.node-version
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
