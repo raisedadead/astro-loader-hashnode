@@ -1,6 +1,6 @@
 {
   "name": "astro-loader-hashnode",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Astro content loader for seamlessly integrating Hashnode blog posts into your Astro website using the Content Layer API",
   "type": "module",
   "main": "dist/index.js",
@@ -11,22 +11,12 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./loader": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./types": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./utils": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "sideEffects": false,
   "scripts": {
@@ -49,19 +39,24 @@
     "content-collections",
     "static-site-generator",
     "markdown",
-    "graphql"
+    "graphql",
+    "loader"
   ],
   "author": {
     "name": "Mrugesh Mohapatra",
-    "email": "noreply@mrugesh.dev"
+    "email": "noreply@mrugesh.dev",
+    "url": "https://mrugesh.dev"
   },
   "license": "MIT",
   "peerDependencies": {
-    "astro": "5.10.0"
+    "astro": "^5.0.0"
   },
   "engines": {
     "node": "20.x || 22.x || 24.x",
     "pnpm": ">=9"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",

@@ -18,7 +18,11 @@ A powerful content loader for integrating Hashnode blog posts into your Astro we
 ## Installation
 
 ```bash
+pnpm add astro-loader-hashnode
+# or
 npm install astro-loader-hashnode
+# or
+yarn add astro-loader-hashnode
 ```
 
 ## Quick Start
