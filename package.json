@@ -16,10 +16,6 @@
     "typecheck": "pnpm --filter astro-loader-hashnode exec tsc --noEmit",
     "check": "pnpm run lint && pnpm run typecheck && pnpm run test:coverage",
     "audit": "pnpm audit --audit-level moderate",
-    "clean": "pnpm -r clean",
-    "prepack": "pnpm --filter astro-loader-hashnode run prepack",
-    "prepublishOnly": "pnpm --filter astro-loader-hashnode run prepublishOnly",
-    "publish:package": "pnpm --filter astro-loader-hashnode publish --access public --no-git-checks",
     "release": "semantic-release",
     "release:locally": "semantic-release --no-ci",
     "prepare": "husky"

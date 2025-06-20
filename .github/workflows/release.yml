@@ -30,7 +30,6 @@ jobs:
 
   build:
     name: "Build"
-    needs: [lint, test]
     uses: ./.github/workflows/build.yml
 
   publish-release:
