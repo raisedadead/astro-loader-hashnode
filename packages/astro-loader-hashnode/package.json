@@ -33,11 +33,7 @@
     "blog",
     "cms",
     "content",
-    "content-collections",
-    "static-site-generator",
-    "markdown",
-    "graphql",
-    "loader"
+    "content-collections"
   ],
   "author": {
     "name": "Mrugesh Mohapatra",
