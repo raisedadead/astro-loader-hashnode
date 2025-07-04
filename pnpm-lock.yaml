@@ -94,8 +94,8 @@ importers:
         specifier: ^5.0.0
         version: 5.10.0(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.8.3)(yaml@2.8.0)
       zod:
-        specifier: 3.25.72
-        version: 3.25.72
+        specifier: 3.25.73
+        version: 3.25.73
 
 packages:
 
@@ -3769,8 +3769,8 @@ packages:
   zod@3.25.67:
     resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
 
-  zod@3.25.72:
-    resolution: {integrity: sha512-Cl+fe4dNL4XumOBNBsr0lHfA80PQiZXHI4xEMTEr8gt6aGz92t3lBA32e71j9+JeF/VAYvdfBnuwJs+BMx/BrA==}
+  zod@3.25.73:
+    resolution: {integrity: sha512-fuIKbQAWQl22Ba5d1quwEETQYjqnpKVyZIWAhbnnHgnDd3a+z4YgEfkI5SZ2xMELnLAXo/Flk2uXgysZNf0uaA==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -4995,9 +4995,9 @@ snapshots:
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.3
-      zod: 3.25.72
-      zod-to-json-schema: 3.24.5(zod@3.25.72)
-      zod-to-ts: 1.2.0(typescript@5.8.3)(zod@3.25.72)
+      zod: 3.25.73
+      zod-to-json-schema: 3.24.5(zod@3.25.73)
+      zod-to-ts: 1.2.0(typescript@5.8.3)(zod@3.25.73)
     optionalDependencies:
       sharp: 0.33.5
     transitivePeerDependencies:
@@ -7890,22 +7890,22 @@ snapshots:
     dependencies:
       zod: 3.25.67
 
-  zod-to-json-schema@3.24.5(zod@3.25.72):
+  zod-to-json-schema@3.24.5(zod@3.25.73):
     dependencies:
-      zod: 3.25.72
+      zod: 3.25.73
 
   zod-to-ts@1.2.0(typescript@5.8.3)(zod@3.25.67):
     dependencies:
       typescript: 5.8.3
       zod: 3.25.67
 
-  zod-to-ts@1.2.0(typescript@5.8.3)(zod@3.25.72):
+  zod-to-ts@1.2.0(typescript@5.8.3)(zod@3.25.73):
     dependencies:
       typescript: 5.8.3
-      zod: 3.25.72
+      zod: 3.25.73
 
   zod@3.25.67: {}
 
-  zod@3.25.72: {}
+  zod@3.25.73: {}
 
   zwitch@2.0.4: {}
