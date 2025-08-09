@@ -18,8 +18,10 @@ export default {
         'revert',
       ],
     ],
-    'subject-case': [2, 'never', ['pascal-case', 'upper-case']],
-    'header-max-length': [2, 'always', 100],
-    'body-max-line-length': [0, 'always', 100],
+  'subject-case': [2, 'never', ['pascal-case', 'upper-case']],
+  // Remove length restrictions to allow long commit messages (e.g. generated release notes)
+  'header-max-length': [0, 'always', Infinity],
+  'body-max-line-length': [0, 'always', Infinity],
+  'footer-max-line-length': [0, 'always', Infinity],
   },
 };
