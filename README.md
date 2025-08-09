@@ -1,19 +1,25 @@
 # Astro Loader Hashnode
 
-A powerful content loader for integrating Hashnode blog posts into your Astro website using the Content Layer API.
+A powerful content loader for integrating Hashnode blog posts into your Astro website using the Astro Content Layer API.
 
 ## Features
 
-- 🚀 **Built for Astro v5.0+** - Uses the new Content Layer API
-- 📡 **GraphQL Integration** - Leverages Hashnode's powerful GraphQL API
-- 🔄 **Smart Caching** - Incremental updates with change detection
-- 📝 **Full TypeScript Support** - Complete type safety with Zod validation
-- 🏷️ **Rich Metadata** - Author info, tags, SEO data, reading time, and more
-- 🎨 **Flexible Content** - Access HTML content (Markdown available for drafts)
-- 🛡️ **Error Resilient** - Graceful fallbacks and comprehensive error handling
-- ⚡ **Performance Optimized** - Cursor-based pagination and selective field querying
-- 📚 **Multiple Loaders** - Posts, Series, Drafts, and Search loaders available
-- 🔐 **Authentication Support** - Access private content and drafts with API tokens
+- 🚀 **Built for Astro v5.0+** – Uses the new Content Layer API
+- 📡 **GraphQL Integration** – Leverages Hashnode's GraphQL API
+- 🔄 **Smart Caching** – Incremental updates with change detection
+- 🧵 **Digest-based Incremental Loads** – Skips unchanged entries (faster rebuilds)
+- �️ **Rendered HTML Support** – Each entry includes `rendered.html` for `render(entry)` usage
+- 🧪 **Schema Auto-Exposure** – Loader exports its internal Zod schema (you can override)
+- 📌 **Extra Preferences** – Includes `pinnedToBlog` and `isDelisted` when available
+- �📝 **Full TypeScript Support** – Complete type safety with Zod validation
+- 🏷️ **Rich Metadata** – Author info, tags, SEO/OG data, reading time, TOC, etc.
+- 🎨 **Flexible Content** – HTML always; Markdown for drafts (and optionally for posts when provided by API)
+- 🛡️ **Error Resilient** – Graceful fallbacks and structured loader errors
+- ⚡ **Performance Optimized** – Cursor-based pagination & selective field querying
+- 📚 **Multiple Loaders** – Posts, Series, Drafts, Search (more can be added)
+- 🔐 **Authentication Support** – Access drafts & private data with a token
+
+---
 
 ## Installation
 
@@ -27,54 +33,48 @@ yarn add astro-loader-hashnode
 
 ## Quick Start
 
-1. **Configure your content collection** in `src/content.config.ts`:
+### 1. Configure your collection (`src/content.config.ts`)
 
-```typescript
+```ts
 import { defineCollection } from 'astro:content';
 import { hashnodeLoader } from 'astro-loader-hashnode';
 
 const blog = defineCollection({
   loader: hashnodeLoader({
-    publicationHost: 'yourblog.hashnode.dev', // Your Hashnode publication URL
-    token: process.env.HASHNODE_TOKEN, // Optional: for private content
-    maxPosts: 100, // Optional: limit number of posts
+    publicationHost: 'yourblog.hashnode.dev', // Required
+    token: process.env.HASHNODE_TOKEN, // Optional
+    maxPosts: 100, // Optional
   }),
 });
 
-export const collections = {
-  blog,
-};
+export const collections = { blog };
 ```
 
-2. **Use the content in your Astro pages**:
+### 2. Render a post page (`src/pages/blog/[...slug].astro`)
 
 ```astro
 ---
- - 🧪 **Schema Auto-Exposure** - Loader exports its Zod schema to Astro (override with your own if desired)
- - 🧵 **Digest-based Incremental Loads** - Skips unchanged entries to speed up repeated builds
- - 🖨️ **Rendered HTML Support** - Each entry includes `rendered.html` for Astro's `render(entry)` API
- - 📌 **Extra Preferences** - Includes `pinnedToBlog` and `isDelisted` when available
-}
+import { getCollection } from 'astro:content';
 
-interface Props {
-  post: CollectionEntry<'blog'>;
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({ params: { slug: post.id }, props: { post } }));
 }
-    pinnedToBlog?: boolean;
-    isDelisted?: boolean;
-    disableComments?: boolean;
-    stickCoverToBottom?: boolean;
-  };
 
 const { post } = Astro.props;
-const { data } = post;
- - **Schema Reuse**: Avoid re-validating unchanged shapes thanks to exposed schema
+const { data, render } = post; // render() available if you want Astro to render markdown
+const html = data.content.html; // Pre-rendered HTML already available
+---
+<html>
+  <head>
     <title>{data.title}</title>
     <meta name="description" content={data.brief} />
   </head>
- - For security issues, please do not open a public issue—email the maintainer instead.
+  <body>
+    <article>
       <h1>{data.title}</h1>
       <p>By {data.author.name} • {data.readingTime} min read</p>
-      <div set:html={data.content.html} />
+      <div set:html={html} />
     </article>
   </body>
 </html>
@@ -195,6 +195,14 @@ Each post includes comprehensive metadata:
   readingTime: number;
   wordCount: number;
 
+  // Preferences (optional when present)
+  preferences?: {
+    pinnedToBlog?: boolean;
+    isDelisted?: boolean;
+    disableComments?: boolean;
+    stickCoverToBottom?: boolean;
+  };
+
   // Hashnode-specific
   hashnodeId: string;
   hashnodeUrl: string;
@@ -240,6 +248,8 @@ export async function GET(context) {
 - **Cursor-based Pagination**: Efficiently handles large publications
 - **Error Handling**: Graceful error handling for API limits and network issues
 - **Smart Caching**: Implements fallbacks for network failures
+- **Schema Reuse**: Exposed schema aids IDE inference without extra config
+- **Rendered HTML**: Avoids re-render cost when you just need HTML directly
 
 ## Example Project
 
@@ -279,3 +289,4 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 - [Issues](https://github.com/raisedadead/astro-loader-hashnode/issues)
 - [Discussions](https://github.com/raisedadead/astro-loader-hashnode/discussions)
+- For security issues, please do not open a public issue—email the maintainer instead.

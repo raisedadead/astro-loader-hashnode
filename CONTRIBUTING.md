@@ -13,7 +13,7 @@ development, testing, and releasing.
 - [Release Process](#release-process)
 - [Code Style](#code-style)
 - [Pull Request Process](#pull-request-process)
- - [Updating Schemas](#updating-schemas)
+- [Updating Schemas](#updating-schemas)
 
 ## Development Setup
 
