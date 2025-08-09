@@ -172,6 +172,18 @@ function transformHashnodePost(post: HashnodePost) {
     preferences: {
       disableComments: post.preferences?.disableComments || undefined,
       stickCoverToBottom: post.preferences?.stickCoverToBottom || undefined,
+      pinnedToBlog:
+        (
+          post.preferences as HashnodePost['preferences'] & {
+            pinnedToBlog?: boolean;
+          }
+        )?.pinnedToBlog || undefined,
+      isDelisted:
+        (
+          post.preferences as HashnodePost['preferences'] & {
+            isDelisted?: boolean;
+          }
+        )?.isDelisted || undefined,
     },
 
     // Publication info - not included in transformation for now

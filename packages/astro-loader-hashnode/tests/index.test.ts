@@ -5,7 +5,6 @@ import {
   createBlog,
   createPublication,
   checkCompatibility,
-  version,
   packageName,
 } from '../src/index.js';
 
@@ -74,8 +73,6 @@ describe('Convenience Functions', () => {
     it('should handle additional options', () => {
       const loaders = createHashnodeLoaders({
         publicationHost: 'test.hashnode.dev',
-        maxPosts: 100,
-        enableCache: true,
         cacheTTL: 300000,
       });
 
@@ -140,8 +137,6 @@ describe('Convenience Functions', () => {
     it('should handle publication options', () => {
       const publication = createPublication({
         publicationHost: 'test.hashnode.dev',
-        maxPosts: 150,
-        enableCache: true,
       });
 
       expect(publication.posts).toBeDefined();
@@ -151,13 +146,6 @@ describe('Convenience Functions', () => {
 });
 
 describe('Package Information', () => {
-  describe('version', () => {
-    it('should have a version number', () => {
-      expect(typeof version).toBe('string');
-      expect(version).toBeTruthy();
-    });
-  });
-
   describe('packageName', () => {
     it('should have correct package name', () => {
       expect(packageName).toBe('astro-loader-hashnode');
@@ -251,7 +239,6 @@ describe('Integration', () => {
       includeCoAuthors: true,
       includeTableOfContents: true,
       token: 'test-token',
-      enableCache: true,
       cacheTTL: 600000,
     });
 

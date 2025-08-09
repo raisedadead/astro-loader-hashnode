@@ -314,8 +314,7 @@ function defineCollection(config: { loader: import('astro/loaders').Loader }) {
   return config;
 }
 
-// Version and package information
-export const version = '2.0.0';
+// Package name (kept for diagnostics)
 export const packageName = 'astro-loader-hashnode';
 
 /**

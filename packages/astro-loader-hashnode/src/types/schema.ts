@@ -186,6 +186,8 @@ export const postSchema = z.object({
     .object({
       disableComments: z.boolean().optional(),
       stickCoverToBottom: z.boolean().optional(),
+      pinnedToBlog: z.boolean().optional(),
+      isDelisted: z.boolean().optional(),
     })
     .optional(),
 

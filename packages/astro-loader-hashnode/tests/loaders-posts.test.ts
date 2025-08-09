@@ -55,9 +55,9 @@ describe('Posts Loader', () => {
         includeComments: true,
         includeCoAuthors: true,
         includeTableOfContents: true,
-        tags: ['javascript', 'react'],
-        minReadTime: 5,
-        maxReadTime: 30,
+        filterByTags: ['javascript', 'react'],
+        minReadingTime: 5,
+        maxReadingTime: 30,
         publishedAfter: new Date('2023-01-01'),
         publishedBefore: new Date('2024-01-01'),
       });
@@ -234,19 +234,39 @@ describe('Posts Loader', () => {
       });
 
       const mockStore = {
-        set: vi.fn(),
+        set: vi.fn().mockReturnValue(true),
         clear: vi.fn(),
         keys: vi.fn().mockReturnValue([]),
         delete: vi.fn(),
         get: vi.fn().mockReturnValue(undefined),
         has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
       };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
 
       await loader.load({
-        store: mockStore,
-        logger: console,
-        parseData: async data => data,
-      });
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({
+          html: md,
+          metadata: {},
+        }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
 
       expect(mockStore.set).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -259,6 +279,104 @@ describe('Posts Loader', () => {
       const callArgs = mockStore.set.mock.calls[0][0];
       expect(callArgs.data.data.title).toBe('Enhanced Post');
       expect(callArgs.data.data.slug).toBe('enhanced-post');
+    });
+
+    it('should include pinnedToBlog and isDelisted preferences and provide rendered HTML', async () => {
+      const mockResponse = {
+        data: {
+          publication: {
+            posts: {
+              pageInfo: { hasNextPage: false, endCursor: null },
+              edges: [
+                {
+                  node: {
+                    id: '2',
+                    cuid: 'cuid-2',
+                    slug: 'pinned-post',
+                    title: 'Pinned Post',
+                    brief: 'Pinned brief',
+                    url: 'https://test.hashnode.dev/pinned-post',
+                    content: {
+                      html: '<p>Pinned content</p>',
+                      markdown: 'Pinned content',
+                    },
+                    publishedAt: '2023-07-01T00:00:00.000Z',
+                    readTimeInMinutes: 4,
+                    author: {
+                      id: 'author-2',
+                      name: 'Pinned Author',
+                      username: 'pinnedauthor',
+                    },
+                    tags: [],
+                    preferences: {
+                      disableComments: false,
+                      stickCoverToBottom: false,
+                      pinnedToBlog: true,
+                      isDelisted: true,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const loader = postsLoader({
+        publicationHost: 'test.hashnode.dev',
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockStore.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: '2',
+          data: expect.any(Object),
+          rendered: expect.objectContaining({
+            html: expect.any(String),
+          }),
+        })
+      );
+
+      const callArgs = mockStore.set.mock.calls[0][0];
+      expect(callArgs.data.data.preferences.pinnedToBlog).toBe(true);
+      expect(callArgs.data.data.preferences.isDelisted).toBe(true);
+      expect(callArgs.rendered.html).toBe(callArgs.data.data.content.html);
     });
   });
 
@@ -326,19 +444,36 @@ describe('Posts Loader', () => {
       });
 
       const mockStore = {
-        set: vi.fn(),
+        set: vi.fn().mockReturnValue(true),
         clear: vi.fn(),
         keys: vi.fn().mockReturnValue([]),
         delete: vi.fn(),
         get: vi.fn().mockReturnValue(undefined),
         has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
       };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
 
       await loader.load({
-        store: mockStore,
-        logger: console,
-        parseData: async data => data,
-      });
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://gql.hashnode.com/',
@@ -389,11 +524,30 @@ describe('Posts Loader', () => {
         has: vi.fn().mockReturnValue(false),
       };
 
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
       await loader.load({
-        store: mockStore,
-        logger: console,
-        parseData: async data => data,
-      });
+        store: {
+          ...mockStore,
+          entries: vi.fn().mockReturnValue([]),
+          values: vi.fn().mockReturnValue([]),
+          addModuleImport: vi.fn(),
+        } as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://gql.hashnode.com/',
@@ -422,12 +576,28 @@ describe('Posts Loader', () => {
       };
 
       // Should not throw, but may log errors
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
       await expect(
         loader.load({
-          store: mockStore,
-          logger: { info: vi.fn(), error: vi.fn() },
-          parseData: async data => data,
-        })
+          store: mockStore as any,
+          logger: mockLogger,
+          collection: 'posts',
+          meta: {},
+          config: {},
+          renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+          generateDigest: (obj: unknown) =>
+            JSON.stringify(obj).length.toString(),
+          parseData: async (props: any) => props,
+        } as any)
       ).resolves.not.toThrow();
     });
   });
@@ -462,9 +632,9 @@ describe('Posts Loader', () => {
     it('should handle filtering options', () => {
       const filteredLoader = new PostsLoader({
         publicationHost: 'test.hashnode.dev',
-        tags: ['javascript', 'react'],
-        minReadTime: 5,
-        maxReadTime: 30,
+        filterByTags: ['javascript', 'react'],
+        minReadingTime: 5,
+        maxReadingTime: 30,
         publishedAfter: new Date('2023-01-01'),
         publishedBefore: new Date('2024-01-01'),
       });
@@ -516,22 +686,40 @@ describe('Posts Loader', () => {
       });
 
       const mockStore = {
-        set: vi.fn(),
+        set: vi.fn().mockReturnValue(true),
         clear: vi.fn(),
         keys: vi.fn().mockReturnValue([]),
         delete: vi.fn(),
         get: vi.fn().mockReturnValue(undefined),
         has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
       };
 
       // Mock parseData to return the data as-is for testing
       const mockParseData = vi.fn().mockImplementation(async data => data);
 
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
       await loader.load({
-        store: mockStore,
-        logger: console,
-        parseData: mockParseData,
-      });
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: mockParseData as any,
+      } as any);
 
       // Verify the loader processes data correctly
       expect(mockFetch).toHaveBeenCalled();

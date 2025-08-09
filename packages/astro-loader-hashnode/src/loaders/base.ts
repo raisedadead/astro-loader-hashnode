@@ -191,7 +191,10 @@ export abstract class BaseHashnodeLoader {
    * Main load method - implements Astro Loader interface
    */
   async load(context: LoaderContext): Promise<void> {
-    const { store, logger, parseData } = context;
+    const { store, logger, parseData, generateDigest } =
+      context as LoaderContext & {
+        generateDigest?: (obj: unknown) => string;
+      };
 
     logger.info(`Loading ${this.config.collection} from Hashnode...`);
 
@@ -226,26 +229,33 @@ export abstract class BaseHashnodeLoader {
         const itemId = processedItem.id as string;
 
         // Calculate content digest for change detection
-        const digest = calculateDigest(processedItem);
+        // Prefer Astro provided generateDigest if available for consistency
+        const digest = generateDigest
+          ? generateDigest(processedItem)
+          : calculateDigest(processedItem);
 
-        // Check if content has changed
-        const existingDigest = store.get(itemId)?.digest;
-        if (existingDigest === digest) {
-          skippedCount++;
-          continue;
+        interface MaybeContent {
+          content?: { html?: string };
         }
-
-        // Store the item with digest
-        store.set({
+        const processedWithContent = processedItem as MaybeContent;
+        const stored = store.set({
           id: itemId,
           data: await parseData({
             id: itemId,
             data: processedItem,
           }),
           digest,
+          // Provide rendered HTML so users can leverage render(entry)
+          rendered: {
+            html: processedWithContent.content?.html || '',
+            metadata: {},
+          },
         });
-
-        processedCount++;
+        if (stored) {
+          processedCount++;
+        } else {
+          skippedCount++;
+        }
       }
 
       logger.info(
@@ -267,6 +277,8 @@ export abstract class BaseHashnodeLoader {
   createLoader(): Loader {
     return {
       name: `hashnode-${this.config.collection}`,
+      // Expose internal schema so users get types if they don't provide one; user schema will override.
+      schema: () => this.config.schema,
       load: (context: LoaderContext) => this.load(context),
     };
   }

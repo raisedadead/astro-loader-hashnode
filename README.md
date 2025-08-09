@@ -50,33 +50,28 @@ export const collections = {
 
 ```astro
 ---
-// src/pages/blog/[...slug].astro
-import { getCollection, getEntry } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
-
-export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post }
-  }));
+ - 🧪 **Schema Auto-Exposure** - Loader exports its Zod schema to Astro (override with your own if desired)
+ - 🧵 **Digest-based Incremental Loads** - Skips unchanged entries to speed up repeated builds
+ - 🖨️ **Rendered HTML Support** - Each entry includes `rendered.html` for Astro's `render(entry)` API
+ - 📌 **Extra Preferences** - Includes `pinnedToBlog` and `isDelisted` when available
 }
 
 interface Props {
   post: CollectionEntry<'blog'>;
 }
+    pinnedToBlog?: boolean;
+    isDelisted?: boolean;
+    disableComments?: boolean;
+    stickCoverToBottom?: boolean;
+  };
 
 const { post } = Astro.props;
 const { data } = post;
----
-
-<html>
-  <head>
+ - **Schema Reuse**: Avoid re-validating unchanged shapes thanks to exposed schema
     <title>{data.title}</title>
     <meta name="description" content={data.brief} />
   </head>
-  <body>
-    <article>
+ - For security issues, please do not open a public issue—email the maintainer instead.
       <h1>{data.title}</h1>
       <p>By {data.author.name} • {data.readingTime} min read</p>
       <div set:html={data.content.html} />

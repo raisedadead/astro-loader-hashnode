@@ -13,6 +13,7 @@ development, testing, and releasing.
 - [Release Process](#release-process)
 - [Code Style](#code-style)
 - [Pull Request Process](#pull-request-process)
+ - [Updating Schemas](#updating-schemas)
 
 ## Development Setup
 
@@ -369,6 +370,17 @@ pnpm run lint:fix
 - Export types from `src/types/index.ts`
 - Use Zod for runtime validation
 - Document complex types with JSDoc
+
+## Updating Schemas
+
+When you add or modify fields returned by any loader:
+
+1. Update the relevant Zod schema under `packages/astro-loader-hashnode/src/types/schema.ts`.
+2. Update the corresponding transform function in the loader (e.g. `posts.ts` `transformHashnodePost`).
+3. Add or adjust tests asserting the new field appears in stored `data` and, if relevant, in the `rendered` output.
+4. Update both READMEs (root and package) if the change is user-visible (new option, new field, or behavior change).
+5. Consider semantic versioning rules: new optional fields = minor, removed/changed fields = major.
+6. If adding digest-impacting fields, no extra steps are needed; the digest is calculated from the full data object.
 
 ## Pull Request Process
 
