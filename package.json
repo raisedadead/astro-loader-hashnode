@@ -20,7 +20,7 @@
     "release:locally": "semantic-release --no-ci",
     "prepare": "husky"
   },
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.17.0",
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-conventional": "19.8.1",
