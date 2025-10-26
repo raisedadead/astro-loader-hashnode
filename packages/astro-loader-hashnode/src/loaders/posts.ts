@@ -7,13 +7,44 @@ import {
   flattenPaginatedResults,
 } from './base.js';
 import { postSchema } from '../types/schema.js';
-import type { PostsLoaderOptions } from '../types/loader.js';
+import type { PostsLoaderOptions, ImageTransformFn } from '../types/loader.js';
 import type { HashnodePost } from '../types/hashnode.js';
+import {
+  transformHtmlImages,
+  transformCoverImage,
+} from '../utils/image-transform.js';
 
 /**
  * Transform Hashnode post to Astro content format
  */
-function transformHashnodePost(post: HashnodePost) {
+async function transformHashnodePost(
+  post: HashnodePost,
+  transformImage?: ImageTransformFn
+) {
+  const postContext = {
+    id: post.id,
+    title: post.title,
+  };
+
+  // Transform cover image if transformImage function provided
+  let coverImageUrl = post.coverImage?.url;
+  if (coverImageUrl && transformImage) {
+    coverImageUrl = await transformCoverImage(
+      coverImageUrl,
+      transformImage,
+      postContext
+    );
+  }
+
+  // Transform inline images in HTML content
+  let contentHtml = post.content?.html || '';
+  if (contentHtml && transformImage) {
+    contentHtml = await transformHtmlImages(
+      contentHtml,
+      transformImage,
+      postContext
+    );
+  }
   return {
     // Core content
     id: post.id,
@@ -24,7 +55,7 @@ function transformHashnodePost(post: HashnodePost) {
     slug: post.slug,
     url: post.url,
     content: {
-      html: post.content?.html || '',
+      html: contentHtml,
       markdown: post.content?.markdown || undefined,
     },
 
@@ -81,15 +112,17 @@ function transformHashnodePost(post: HashnodePost) {
       })) || undefined,
 
     // Visual content - match schema structure
-    coverImage: post.coverImage
-      ? {
-          url: post.coverImage.url,
-          alt: undefined,
-          attribution: post.coverImage.attribution || undefined,
-          isPortrait: post.coverImage.isPortrait || undefined,
-          isAttributionHidden: post.coverImage.isAttributionHidden || undefined,
-        }
-      : undefined,
+    coverImage:
+      post.coverImage && coverImageUrl
+        ? {
+            url: coverImageUrl,
+            alt: undefined,
+            attribution: post.coverImage.attribution || undefined,
+            isPortrait: post.coverImage.isPortrait || undefined,
+            isAttributionHidden:
+              post.coverImage.isAttributionHidden || undefined,
+          }
+        : undefined,
 
     // Taxonomies - match schema structure
     tags: (post.tags || []).map(tag => ({
@@ -284,8 +317,8 @@ export class PostsLoader extends BaseHashnodeLoader {
   /**
    * Transform Hashnode post to Astro content format
    */
-  protected transformItem(post: HashnodePost) {
-    return transformHashnodePost(post);
+  protected async transformItem(post: HashnodePost) {
+    return transformHashnodePost(post, this.options.transformImage);
   }
 
   /**

@@ -102,7 +102,7 @@ export abstract class BaseHashnodeLoader {
    * Abstract method to transform API data to Astro content format
    * Must be implemented by specific loaders
    */
-  protected abstract transformItem(item: unknown): unknown;
+  protected abstract transformItem(item: unknown): unknown | Promise<unknown>;
 
   /**
    * Generate unique ID for an item
@@ -158,8 +158,8 @@ export abstract class BaseHashnodeLoader {
    */
   protected async processItem(item: unknown): Promise<LoaderResult> {
     try {
-      // Transform the item
-      const transformed = this.transformItem(item);
+      // Transform the item (supports both sync and async)
+      const transformed = await this.transformItem(item);
 
       // Validate against schema
       const validation = this.validateData(transformed);
