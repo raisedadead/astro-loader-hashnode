@@ -1,21 +1,3 @@
-# [1.3.0](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.2.0...v1.3.0) (2025-10-26)
-
-
-### Bug Fixes
-
-* configure npm Trusted Publishers for GitHub Actions ([#101](https://github.com/raisedadead/astro-loader-hashnode/issues/101)) ([8bf74b5](https://github.com/raisedadead/astro-loader-hashnode/commit/8bf74b5b740178daf7d9adf73ae33de8d41b8d52))
-* **deps:** update dependency zod to v4 ([#86](https://github.com/raisedadead/astro-loader-hashnode/issues/86)) ([92a2301](https://github.com/raisedadead/astro-loader-hashnode/commit/92a23012e96f7d84cf8c68e3f74a6cd26f2f32c4))
-* force @semantic-release/npm@13.1.1 via pnpm overrides ([a8481e2](https://github.com/raisedadead/astro-loader-hashnode/commit/a8481e2e6c7cb4100452f8c0d6dd020863eeabb2))
-* rebuild lockfile with @semantic-release/npm@13.1.1 ([fbf8f79](https://github.com/raisedadead/astro-loader-hashnode/commit/fbf8f79c5d4b023f2ad9c22d7ccf12d6dcb48d82))
-* update release settings ([d142db1](https://github.com/raisedadead/astro-loader-hashnode/commit/d142db15ef96a067b1f2b4a721e4b903b8f6e733))
-
-
-### Features
-
-* add GPG commit signing for releases ([43a8bc3](https://github.com/raisedadead/astro-loader-hashnode/commit/43a8bc337344536556e6da6366398766f3c1a92f))
-* add image transformation hooks ([#96](https://github.com/raisedadead/astro-loader-hashnode/issues/96)) ([d565990](https://github.com/raisedadead/astro-loader-hashnode/commit/d565990b75de3354ffac2daca7e71cae2359c165))
-* use GitHub App token for semantic-release ([59b4187](https://github.com/raisedadead/astro-loader-hashnode/commit/59b4187ff9c6976612db39a397cbf1a678603ba6))
-
 # [1.2.0](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.1.0...v1.2.0) (2025-08-09)
 
 
