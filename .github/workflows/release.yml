@@ -44,11 +44,18 @@ jobs:
       packages: write
 
     steps:
+      - name: "Generate App Token"
+        id: generate-token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
+        with:
+          app_id: ${{ secrets.RELEASE_APP_ID }}
+          private_key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: "Checkout Repository"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           fetch-depth: 0
-          persist-credentials: false
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: "Setup pnpm"
         uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
@@ -58,7 +65,6 @@ jobs:
         with:
           node-version: 22.21.0
           cache: "pnpm"
-          registry-url: "https://registry.npmjs.org"
 
       - name: "Install Dependencies"
         run: pnpm install
@@ -68,6 +74,9 @@ jobs:
 
       - name: "Execute Release"
         run: |
+          git config --global user.name "Mrugesh Mohapatra"
+          git config --global user.email "noreply@mrugesh.dev"
+
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             echo "🔍 Running dry-run release..."
             pnpm run release --dry-run
@@ -76,6 +85,4 @@ jobs:
             pnpm run release
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
