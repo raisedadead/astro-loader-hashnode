@@ -60,7 +60,7 @@ export interface BaseLoaderConfig extends BaseLoaderOptions {
   /**
    * Zod schema for validation
    */
-  schema: z.ZodSchema;
+  schema: z.ZodType;
 }
 
 /**
@@ -127,7 +127,7 @@ export abstract class BaseHashnodeLoader {
         error: new LoaderError(
           `Data validation failed: ${zodError.message}`,
           'VALIDATION_ERROR',
-          { errors: zodError.errors }
+          { errors: zodError.issues }
         ),
       };
     }
@@ -277,8 +277,14 @@ export abstract class BaseHashnodeLoader {
   createLoader(): Loader {
     return {
       name: `hashnode-${this.config.collection}`,
-      // Expose internal schema so users get types if they don't provide one; user schema will override.
-      schema: () => this.config.schema,
+      /**
+       * Expose internal schema so users get types if they don't provide one.
+       * Type assertion needed: Astro 5.x uses Zod 3 types (3-generic ZodType) but we're using Zod 4 (2-generic ZodType).
+       * Zod 4's ZodType is structurally compatible at runtime - only generic signatures differ.
+       * This will resolve naturally when Astro upgrades to Zod 4.
+       * See: https://github.com/withastro/astro/issues/14117
+       */
+      schema: (() => this.config.schema) as unknown as Loader['schema'],
       load: (context: LoaderContext) => this.load(context),
     };
   }
