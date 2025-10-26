@@ -43,7 +43,9 @@
       "@semantic-release/npm",
       {
         "pkgRoot": "packages/astro-loader-hashnode",
-        "tarballDir": "dist"
+        "tarballDir": "dist",
+        "npmPublish": true,
+        "provenance": true
       }
     ],
     [
