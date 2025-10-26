@@ -34,7 +34,17 @@ export const tagSchema = z.object({
 
 // Cover image schema
 export const coverImageSchema = z.object({
-  url: z.string().url(),
+  url: z.string().refine(
+    val => {
+      // Accept absolute URLs (http/https) or relative URLs starting with /
+      return (
+        val.startsWith('http://') ||
+        val.startsWith('https://') ||
+        val.startsWith('/')
+      );
+    },
+    { message: 'Must be an absolute or relative URL' }
+  ),
   alt: z.string().optional(),
   attribution: z.string().optional(),
   isPortrait: z.boolean().optional(),

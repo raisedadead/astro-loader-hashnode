@@ -16,7 +16,15 @@ const blog = defineCollection({
     maxPosts: 10,
     includeComments: true,
     includeCoAuthors: true,
-    includeTableOfContents: true
+    includeTableOfContents: true,
+    // Optional: Transform Hashnode CDN images to your preferred CDN
+    // transformImage: async (url, context) => {
+    //   if (!url.includes('cdn.hashnode.com')) return url;
+    //   // Example: Transform to Cloudflare Images
+    //   // const cdnUrl = await uploadToCloudflare(url, context.postId);
+    //   // return cdnUrl;
+    //   return url; // Return transformed URL
+    // }
   })
 });
 

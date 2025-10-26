@@ -104,6 +104,9 @@ export type {
   SeriesLoaderOptions,
   SearchLoaderOptions,
   DraftsLoaderOptions,
+  // Image transformation types
+  ImageTransformContext,
+  ImageTransformFn,
 } from './types/loader.js';
 
 export type {

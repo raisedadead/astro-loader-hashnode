@@ -45,6 +45,14 @@ export {
   generateSitemapEntry,
 } from './url.js';
 
+// Image transformation utilities
+export {
+  isHashnodeImageUrl,
+  transformHtmlImages,
+  transformCoverImage,
+  transformPostImages,
+} from './image-transform.js';
+
 // Import for internal use
 import { processContent } from './content.js';
 import { generateSEOMetadata } from './seo.js';

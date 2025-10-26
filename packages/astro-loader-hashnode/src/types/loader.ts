@@ -2,6 +2,28 @@
  * Loader configuration types
  */
 
+/**
+ * Context provided to image transformation function
+ */
+export interface ImageTransformContext {
+  /** Type of image: cover or inline */
+  type: 'cover' | 'inline';
+  /** Post ID */
+  postId: string;
+  /** Post title */
+  postTitle: string;
+  /** Original Hashnode CDN URL */
+  originalUrl: string;
+}
+
+/**
+ * Image transformation function type
+ */
+export type ImageTransformFn = (
+  url: string,
+  context: ImageTransformContext
+) => string | Promise<string>;
+
 export interface BaseLoaderOptions {
   /** The Hashnode publication host (e.g., 'yourblog.hashnode.dev') */
   publicationHost: string;
@@ -19,6 +41,25 @@ export interface BaseLoaderOptions {
   cache?: boolean;
   /** Custom cache TTL in seconds */
   cacheTTL?: number;
+  /**
+   * Transform image URLs during content loading
+   *
+   * @param url - Original Hashnode CDN URL
+   * @param context - Metadata about the image
+   * @returns Transformed URL (can be async)
+   *
+   * @example
+   * ```typescript
+   * transformImage: (url) => `https://my-cdn.com/${url}`
+   * ```
+   *
+   * @example Using mapping file
+   * ```typescript
+   * const urlMap = new Map(mapping.map(m => [m.hashnodeUrl, m.cloudflareUrl]));
+   * transformImage: (url) => urlMap.get(url) || url
+   * ```
+   */
+  transformImage?: ImageTransformFn;
 }
 
 export interface PostsLoaderOptions extends BaseLoaderOptions {
