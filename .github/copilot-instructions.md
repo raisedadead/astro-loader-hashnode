@@ -90,11 +90,17 @@ pnpm run release:locally  # Run semantic-release in no-ci mode
 ## Code Style Guidelines
 
 ### TypeScript
-- Use **strict TypeScript** settings
+
+**This is a strongly typed codebase with strict policies:**
+
+- Use **strict TypeScript** settings (`strict: true`, `noImplicitAny: true`)
+- **NEVER use `any` type** - always provide proper types or use `unknown` with type guards
+- **NEVER add ESLint ignore comments** (e.g., `eslint-disable-next-line`) - fix the underlying issue instead
 - Export all public types from `src/types/index.ts`
 - Use Zod for runtime validation and schema definition
 - Document complex types with JSDoc comments
 - Prefer interfaces for object shapes, types for unions/intersections
+- All code must pass TypeScript compilation with no errors or warnings
 
 ### Code Formatting
 - **Prettier** handles all formatting automatically
@@ -106,6 +112,7 @@ pnpm run release:locally  # Run semantic-release in no-ci mode
 - TypeScript-aware linting with `@typescript-eslint`
 - Prettier integration to avoid conflicts
 - Run `pnpm run lint:fix` to auto-fix issues
+- **NEVER suppress ESLint warnings** with ignore comments - address the root cause instead
 
 ### Naming Conventions
 - Files: `kebab-case.ts`
