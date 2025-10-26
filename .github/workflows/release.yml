@@ -66,6 +66,17 @@ jobs:
       - name: "Build Packages"
         run: pnpm run build
 
+      - name: "Import GPG Key"
+        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_config_global: true
+          git_committer_name: "Mrugesh Mohapatra"
+          git_committer_email: "noreply@mrugesh.dev"
+
       - name: "Execute Release"
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
