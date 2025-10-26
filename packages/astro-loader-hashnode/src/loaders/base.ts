@@ -127,7 +127,7 @@ export abstract class BaseHashnodeLoader {
         error: new LoaderError(
           `Data validation failed: ${zodError.message}`,
           'VALIDATION_ERROR',
-          { errors: zodError.errors }
+          { errors: zodError.issues }
         ),
       };
     }
@@ -278,7 +278,8 @@ export abstract class BaseHashnodeLoader {
     return {
       name: `hashnode-${this.config.collection}`,
       // Expose internal schema so users get types if they don't provide one; user schema will override.
-      schema: () => this.config.schema,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      schema: () => this.config.schema as any,
       load: (context: LoaderContext) => this.load(context),
     };
   }
