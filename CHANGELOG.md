@@ -1,3 +1,16 @@
+# [1.3.0](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.2.0...v1.3.0) (2025-10-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency zod to v4 ([#86](https://github.com/raisedadead/astro-loader-hashnode/issues/86)) ([e4f1c52](https://github.com/raisedadead/astro-loader-hashnode/commit/e4f1c524e156b69aa1b64d592cccaf691cebaf09))
+
+
+### Features
+
+* add image transformation hooks ([#96](https://github.com/raisedadead/astro-loader-hashnode/issues/96)) ([d565990](https://github.com/raisedadead/astro-loader-hashnode/commit/d565990b75de3354ffac2daca7e71cae2359c165))
+* OIDC based releases ([32813f3](https://github.com/raisedadead/astro-loader-hashnode/commit/32813f3cf0060b3d5f6bc42f1e76fe05d1bea9cd))
+
 # [1.2.0](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.1.0...v1.2.0) (2025-08-09)
 
 
