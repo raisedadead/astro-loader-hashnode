@@ -55,6 +55,11 @@
     "email": "noreply@mrugesh.dev"
   },
   "license": "ISC",
+  "pnpm": {
+    "overrides": {
+      "@semantic-release/npm": "13.1.1"
+    }
+  },
   "lint-staged": {
     "packages/astro-loader-hashnode/**/*.{ts,js,json,md}": [
       "pnpm run lint:fix",
