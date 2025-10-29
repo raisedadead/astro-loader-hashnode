@@ -11,7 +11,7 @@ A powerful content loader for integrating Hashnode blog posts into your Astro we
 - �️ **Rendered HTML Support** – Each entry includes `rendered.html` for `render(entry)` usage
 - 🧪 **Schema Auto-Exposure** – Loader exports its internal Zod schema (you can override)
 - 📌 **Extra Preferences** – Includes `pinnedToBlog` and `isDelisted` when available
-- �📝 **Full TypeScript Support** – Complete type safety with Zod validation
+- 📝 **Full TypeScript Support** – Complete type safety with Zod validation
 - 🏷️ **Rich Metadata** – Author info, tags, SEO/OG data, reading time, TOC, etc.
 - 🎨 **Flexible Content** – HTML always; Markdown for drafts (and optionally for posts when provided by API)
 - 🛡️ **Error Resilient** – Graceful fallbacks and structured loader errors
