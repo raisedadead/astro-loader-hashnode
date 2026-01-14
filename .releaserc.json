@@ -54,7 +54,9 @@
             "path": "dist/*.tgz",
             "label": "Package Tarball"
           }
-        ]
+        ],
+        "successComment": false,
+        "failComment": false
       }
     ],
     [
