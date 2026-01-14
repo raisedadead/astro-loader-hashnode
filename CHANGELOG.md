@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.2.0...v1.2.1) (2026-01-14)
+
+
+### Bug Fixes
+
+* new release workflow ([1fe074e](https://github.com/raisedadead/astro-loader-hashnode/commit/1fe074e4d8dc63711e5369e972e310322ad7a9a7))
+* new release workflow ([c40dca6](https://github.com/raisedadead/astro-loader-hashnode/commit/c40dca671bebf85d56c8fafed52217d296d4565b))
+
 # [1.2.0](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.1.0...v1.2.0) (2025-08-09)
 
 

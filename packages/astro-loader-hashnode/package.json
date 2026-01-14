@@ -1,6 +1,6 @@
 {
   "name": "astro-loader-hashnode",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Astro content loader for seamlessly integrating Hashnode blog posts into your Astro website using the Content Layer API",
   "type": "module",
   "main": "dist/index.js",
