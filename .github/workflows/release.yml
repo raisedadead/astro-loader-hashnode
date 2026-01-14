@@ -44,11 +44,19 @@ jobs:
       packages: write
 
     steps:
+      - name: "Generate App Token"
+        id: app-token
+        uses: actions/create-github-app-token@67e27a7eb7db372a1c61a7f9bdab8699e9ee57f7 # v1.11.3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: "Checkout Repository"
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           fetch-depth: 0
           persist-credentials: false
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: "Setup pnpm"
         uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
@@ -59,6 +67,15 @@ jobs:
           node-version: 24
           cache: "pnpm"
           registry-url: "https://registry.npmjs.org"
+
+      - name: "Configure npm for OIDC"
+        run: |
+          echo "Removing token-based auth to enable OIDC..."
+          if [ -f "$NPM_CONFIG_USERCONFIG" ]; then
+            sed -i '/_authToken/d' "$NPM_CONFIG_USERCONFIG"
+            echo "registry=https://registry.npmjs.org/" > "$NPM_CONFIG_USERCONFIG"
+          fi
+          cat "$NPM_CONFIG_USERCONFIG" || true
 
       - name: "Install Dependencies"
         run: pnpm install
@@ -76,4 +93,4 @@ jobs:
             pnpm run release
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
