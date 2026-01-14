@@ -61,6 +61,6 @@
   },
   "homepage": "https://github.com/raisedadead/astro-loader-hashnode#readme",
   "dependencies": {
-    "zod": "4.3.5"
+    "zod": "^3.24.2"
   }
 }
