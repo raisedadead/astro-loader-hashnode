@@ -11,6 +11,7 @@ development, testing, and releasing.
 - [Testing](#testing)
 - [Commit Conventions](#commit-conventions)
 - [Release Process](#release-process)
+  - [Release Infrastructure Setup](#release-infrastructure-setup)
 - [Code Style](#code-style)
 - [Pull Request Process](#pull-request-process)
 - [Updating Schemas](#updating-schemas)
@@ -337,6 +338,67 @@ pnpm run release
 - **Wrong version**: Ensure conventional commit format is followed
 - **Missing changes**: Verify all intended commits are merged to main before triggering release
 - **Dry run errors**: Fix issues before running actual release
+
+### Release Infrastructure Setup
+
+The release workflow requires a GitHub App for authentication. This allows semantic-release to push changelog updates and version bumps back to the repository.
+
+#### Creating a GitHub App
+
+1. Go to **GitHub Settings > Developer settings > GitHub Apps > New GitHub App**
+   (or visit: https://github.com/settings/apps/new)
+
+2. Configure the app:
+   - **App name**: Choose a descriptive name (e.g., `Releazer`)
+   - **Homepage URL**: Your repository or organization URL
+   - **Webhook**: Uncheck "Active" (not needed for this use case)
+
+3. Set **Repository permissions**:
+   | Permission | Access |
+   |------------|--------|
+   | Contents | Read & Write |
+   | Issues | Read & Write |
+   | Pull requests | Read & Write |
+   | Metadata | Read-only (auto-granted) |
+
+4. Under **Where can this GitHub App be installed?**, select based on your needs:
+   - "Only on this account" for personal use
+   - "Any account" if sharing across organizations
+
+5. Click **Create GitHub App**
+
+#### Generating Credentials
+
+1. After creation, note the **App ID** displayed on the app's settings page
+
+2. Scroll to **Private keys** section and click **Generate a private key**
+   - This downloads a `.pem` file - store it securely
+
+#### Installing the App
+
+1. From your GitHub App's settings page, click **Install App** in the sidebar
+
+2. Select the repository (or repositories) where you want to use it
+
+3. Choose "Only select repositories" and pick the specific repos
+
+#### Configuring Repository Secrets
+
+Add these secrets to each repository using the app (**Settings > Secrets and variables > Actions**):
+
+| Secret Name | Value |
+|-------------|-------|
+| `RELEASE_APP_ID` | The App ID number from the app settings |
+| `RELEASE_APP_PRIVATE_KEY` | The entire contents of the downloaded `.pem` file |
+
+#### Verifying Setup
+
+1. Trigger the Release workflow with **Dry run** enabled
+2. Check the "Generate App Token" step succeeds
+3. If it fails, verify:
+   - The app is installed on the repository
+   - Both secrets are set correctly
+   - The private key includes the full PEM content (including `-----BEGIN/END-----` lines)
 
 ## Code Style
 
