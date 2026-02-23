@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsc"
   },
-  "packageManager": "pnpm@10.30.0",
+  "packageManager": "pnpm@10.30.1",
   "keywords": [
     "astro",
     "astro-component",
