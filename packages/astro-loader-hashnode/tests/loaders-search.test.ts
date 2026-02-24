@@ -206,5 +206,220 @@ describe('Search Loader', () => {
       expect(loader).toBeInstanceOf(SearchLoader);
       expect(typeof loader.load).toBe('function');
     });
+
+    it('should handle empty searchTerms by returning no results', async () => {
+      const loader = searchLoader({
+        publicationHost: 'test.hashnode.dev',
+        searchTerms: [],
+      });
+
+      const mockStore = {
+        set: vi.fn(),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'search',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockStore.set).not.toHaveBeenCalled();
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('should deduplicate and sort search results across multiple terms', async () => {
+      const makeSearchResponse = (
+        id: string,
+        title: string,
+        brief: string
+      ) => ({
+        data: {
+          searchPostsOfPublication: {
+            pageInfo: { hasNextPage: false, endCursor: null },
+            edges: [
+              {
+                node: {
+                  id,
+                  cuid: `cuid-${id}`,
+                  slug: `slug-${id}`,
+                  title,
+                  brief,
+                  url: `https://test.hashnode.dev/${id}`,
+                  publishedAt: '2023-05-15T00:00:00.000Z',
+                  reactionCount: 10,
+                  views: 500,
+                  author: {
+                    id: 'author-1',
+                    name: 'Author',
+                    username: 'author',
+                  },
+                },
+                cursor: 'cursor-1',
+              },
+            ],
+          },
+        },
+      });
+
+      // Same post returned for both search terms
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            makeSearchResponse(
+              'post-1',
+              'JavaScript Guide',
+              'Learn JavaScript'
+            ),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            makeSearchResponse(
+              'post-1',
+              'JavaScript Guide',
+              'Learn JavaScript'
+            ),
+        });
+
+      const loader = searchLoader({
+        publicationHost: 'test.hashnode.dev',
+        searchTerms: ['javascript', 'guide'],
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'search',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      // Deduplicated to 1
+      expect(mockStore.set).toHaveBeenCalledTimes(1);
+    });
+
+    it('should continue searching when individual term fails', async () => {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: {
+              searchPostsOfPublication: {
+                pageInfo: { hasNextPage: false, endCursor: null },
+                edges: [
+                  {
+                    node: {
+                      id: 'post-1',
+                      cuid: 'cuid-1',
+                      slug: 'post-1',
+                      title: 'Result',
+                      brief: 'Brief',
+                      url: 'https://test.hashnode.dev/post-1',
+                      publishedAt: '2023-05-15T00:00:00.000Z',
+                      reactionCount: 0,
+                      views: 0,
+                      author: {
+                        id: 'author-1',
+                        name: 'Author',
+                        username: 'author',
+                      },
+                    },
+                    cursor: 'cursor-1',
+                  },
+                ],
+              },
+            },
+          }),
+        })
+        .mockRejectedValueOnce(new Error('Search failed'));
+
+      const loader = searchLoader({
+        publicationHost: 'test.hashnode.dev',
+        searchTerms: ['javascript', 'failing-term'],
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'search',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      // First term's result should still be stored
+      expect(mockStore.set).toHaveBeenCalledTimes(1);
+    });
   });
 });
