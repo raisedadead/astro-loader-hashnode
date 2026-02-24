@@ -18,7 +18,7 @@ jobs:
     name: "Test"
     strategy:
       matrix:
-        node-version: [20, 22]
+        node-version: [20, 22, 24]
     uses: ./.github/workflows/test.yml
     with:
       node-version: ${{ matrix.node-version }}
