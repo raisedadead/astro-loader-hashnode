@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.2.1...v1.3.0) (2026-02-24)
+
+
+### Bug Fixes
+
+* release workflow permissions ([#163](https://github.com/raisedadead/astro-loader-hashnode/issues/163)) ([7751311](https://github.com/raisedadead/astro-loader-hashnode/commit/7751311cd232da74ad0803997771304fb07bee54))
+
+
+### Features
+
+* Node.js version support 20.x, 24.x ([#162](https://github.com/raisedadead/astro-loader-hashnode/issues/162)) ([268168f](https://github.com/raisedadead/astro-loader-hashnode/commit/268168ff9684be9fc27523adac22b40b40d40ec7))
+
 ## [1.2.1](https://github.com/raisedadead/astro-loader-hashnode/compare/v1.2.0...v1.2.1) (2026-01-14)
 
 
