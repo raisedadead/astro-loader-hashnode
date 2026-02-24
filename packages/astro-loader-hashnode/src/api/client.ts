@@ -223,7 +223,9 @@ export class HashnodeClient {
       clearTimeout(timeoutId);
 
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error(`Request timeout after ${this.timeout}ms`);
+        throw new Error(`Request timeout after ${this.timeout}ms`, {
+          cause: error,
+        });
       }
 
       throw error;
