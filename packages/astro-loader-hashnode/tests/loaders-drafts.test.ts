@@ -353,8 +353,273 @@ describe('Drafts Loader', () => {
     });
   });
 
+  describe('Draft Transformation - Hash Fallback', () => {
+    let loader: DraftsLoader;
+
+    beforeEach(() => {
+      loader = new DraftsLoader({
+        publicationHost: 'test.hashnode.dev',
+        token: 'test-token',
+      });
+    });
+
+    it('should generate hash-based ID when draft has no id/cuid/slug', () => {
+      const mockDraft: HashnodePost = {
+        id: '',
+        title: 'No ID Draft',
+        brief: 'Brief',
+        slug: '',
+        content: { html: '<p>Content</p>' },
+        publishedAt: '2023-12-01T10:00:00.000Z',
+        updatedAt: '2023-12-01T10:00:00.000Z',
+        readTimeInMinutes: 1,
+        author: {
+          id: 'author-1',
+          name: 'Author',
+          username: 'author',
+        },
+        tags: [],
+      };
+
+      // The transformItem's internal generateDraftId should use the hash fallback
+      const transformed = loader['transformItem'](mockDraft);
+
+      // The transform function's ID should use hash fallback (draft- prefix + hash)
+      expect(transformed.id).toMatch(/^draft-[a-z0-9]+$/);
+    });
+
+    it('should handle draft with no author object', () => {
+      const mockDraft = {
+        id: 'draft-1',
+        title: 'Draft',
+        brief: 'Brief',
+        slug: 'draft-1',
+        content: { html: '<p>Content</p>' },
+        publishedAt: '2023-12-01T10:00:00.000Z',
+        readTimeInMinutes: 1,
+        tags: [],
+      } as unknown as HashnodePost;
+
+      const transformed = loader['transformItem'](mockDraft);
+
+      expect(transformed.author).toEqual({
+        id: 'unknown',
+        name: 'Unknown Author',
+        username: 'unknown',
+        profilePicture: '',
+      });
+    });
+  });
+
   describe('Draft Data Handling', () => {
-    it.skip('should handle draft posts', async () => {
+    it('should fetch all drafts via load()', async () => {
+      const mockResponse = {
+        data: {
+          me: {
+            drafts: {
+              edges: [
+                {
+                  node: {
+                    id: 'draft-1',
+                    title: 'Draft Post 1',
+                    subtitle: '',
+                    content: {
+                      html: '<p>Draft content</p>',
+                      markdown: 'Draft content',
+                    },
+                    brief: 'Draft brief',
+                    slug: 'draft-post-1',
+                    coverImage: null,
+                    tags: [],
+                    author: {
+                      id: 'author-1',
+                      name: 'Draft Author',
+                      username: 'draftauthor',
+                    },
+                    updatedAt: '2023-06-01T00:00:00.000Z',
+                    readTimeInMinutes: 5,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const loader = draftsLoader({
+        publicationHost: 'test.hashnode.dev',
+        token: 'draft-access-token',
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'drafts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockFetch).toHaveBeenCalled();
+      expect(mockStore.set).toHaveBeenCalled();
+    });
+
+    it('should fetch specific draft by ID via includeDraftById', async () => {
+      const mockResponse = {
+        data: {
+          draft: {
+            id: 'specific-draft-123',
+            title: 'Specific Draft',
+            subtitle: '',
+            content: {
+              html: '<p>Specific draft content</p>',
+              markdown: 'Specific draft content',
+            },
+            brief: 'Specific draft brief',
+            slug: 'specific-draft',
+            coverImage: null,
+            tags: [],
+            author: {
+              id: 'author-1',
+              name: 'Author',
+              username: 'author',
+            },
+            updatedAt: '2023-06-01T00:00:00.000Z',
+            readTimeInMinutes: 3,
+          },
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const loader = draftsLoader({
+        publicationHost: 'test.hashnode.dev',
+        token: 'draft-access-token',
+        includeDraftById: 'specific-draft-123',
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'drafts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockFetch).toHaveBeenCalled();
+      expect(mockStore.set).toHaveBeenCalled();
+    });
+
+    it('should handle null draft when fetching by ID', async () => {
+      const mockResponse = {
+        data: {
+          draft: null,
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const loader = draftsLoader({
+        publicationHost: 'test.hashnode.dev',
+        token: 'draft-access-token',
+        includeDraftById: 'nonexistent-draft',
+      });
+
+      const mockStore = {
+        set: vi.fn(),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'drafts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      // No items should be stored since draft is null
+      expect(mockStore.set).not.toHaveBeenCalled();
+    });
+
+    it.skip('should handle draft posts (legacy)', async () => {
       const mockResponse = {
         data: {
           me: {

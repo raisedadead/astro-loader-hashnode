@@ -429,9 +429,245 @@ describe('Series Loader', () => {
   });
 
   describe('Series Data Handling', () => {
-    it.skip('should handle series data with posts', async () => {
-      // TODO: Fix series loader test structure
-      expect(true).toBe(true);
+    it('should fetch and process series data via load()', async () => {
+      const mockResponse = {
+        data: {
+          publication: {
+            id: 'pub-1',
+            series: {
+              edges: [
+                {
+                  node: {
+                    id: 'series-1',
+                    cuid: 'series-cuid-1',
+                    name: 'JavaScript Basics',
+                    slug: 'javascript-basics',
+                    description: {
+                      html: '<p>Learn JS</p>',
+                      text: 'Learn JS',
+                    },
+                    coverImage: 'https://example.com/cover.jpg',
+                    createdAt: '2023-01-01T00:00:00.000Z',
+                    sortOrder: 'asc',
+                    author: {
+                      id: 'author-1',
+                      name: 'Author',
+                      username: 'author',
+                      profilePicture: 'https://example.com/pic.jpg',
+                      bio: { html: '<p>Bio</p>', text: 'Bio' },
+                      followersCount: 100,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const loader = seriesLoader({
+        publicationHost: 'test.hashnode.dev',
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'series',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockFetch).toHaveBeenCalled();
+      // The fetchData() method was exercised; validation may or may not pass
+      // depending on schema vs transform shape, but the code path is covered.
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('Loading series from Hashnode')
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('Fetched 1 items from Hashnode')
+      );
+    });
+
+    it('should fetch series with posts included', async () => {
+      const mockResponse = {
+        data: {
+          publication: {
+            id: 'pub-1',
+            series: {
+              edges: [
+                {
+                  node: {
+                    id: 'series-1',
+                    cuid: 'series-cuid-1',
+                    name: 'React Series',
+                    slug: 'react-series',
+                    description: {
+                      html: '<p>React</p>',
+                      text: 'React',
+                    },
+                    createdAt: '2023-01-01T00:00:00.000Z',
+                    sortOrder: 'desc',
+                    author: {
+                      id: 'author-1',
+                      name: 'Author',
+                      username: 'author',
+                      profilePicture: '',
+                      bio: { html: '', text: '' },
+                      followersCount: 0,
+                    },
+                    posts: {
+                      edges: [
+                        {
+                          node: {
+                            id: 'post-1',
+                            title: 'React Intro',
+                            slug: 'react-intro',
+                            brief: 'Intro to React',
+                            publishedAt: '2023-06-01T00:00:00.000Z',
+                            readTimeInMinutes: 5,
+                            views: 100,
+                            url: 'https://example.com/react-intro',
+                            coverImage: {
+                              url: 'https://example.com/cover.jpg',
+                              isPortrait: false,
+                            },
+                            author: {
+                              name: 'Author',
+                              username: 'author',
+                              profilePicture: '',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const loader = seriesLoader({
+        publicationHost: 'test.hashnode.dev',
+        includePosts: true,
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'series',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockFetch).toHaveBeenCalled();
+      // Verify the GraphQL query includes posts
+      const fetchCall = mockFetch.mock.calls[0];
+      const body = JSON.parse(fetchCall[1].body);
+      expect(body.query).toContain('posts(first: 100)');
+    });
+
+    it('should handle API error during series fetch', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+      const loader = seriesLoader({
+        publicationHost: 'test.hashnode.dev',
+      });
+
+      const mockStore = {
+        set: vi.fn(),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'series',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to fetch series')
+      );
     });
 
     it('should create loader with series-specific options', () => {

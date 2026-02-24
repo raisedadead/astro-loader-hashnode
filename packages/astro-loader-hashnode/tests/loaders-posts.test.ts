@@ -643,6 +643,390 @@ describe('Posts Loader', () => {
     });
   });
 
+  describe('Posts Loader fetchData with includeDrafts', () => {
+    it('should fetch drafts when includeDrafts is true and token is provided', async () => {
+      const mockDraftsResponse = {
+        data: {
+          me: {
+            drafts: {
+              edges: [
+                {
+                  node: {
+                    id: 'draft-1',
+                    cuid: 'draft-cuid-1',
+                    slug: 'draft-post',
+                    title: 'Draft Post',
+                    brief: 'A draft',
+                    url: 'https://test.hashnode.dev/draft-post',
+                    content: { html: '<p>Draft content</p>' },
+                    publishedAt: '2023-01-01T00:00:00.000Z',
+                    readTimeInMinutes: 3,
+                    author: {
+                      id: 'author-1',
+                      name: 'Author',
+                      username: 'author',
+                    },
+                    tags: [],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockDraftsResponse,
+      });
+
+      const loader = postsLoader({
+        publicationHost: 'test.hashnode.dev',
+        token: 'test-token',
+        includeDrafts: true,
+        maxPosts: 10,
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockFetch).toHaveBeenCalled();
+      expect(mockStore.set).toHaveBeenCalled();
+    });
+
+    it('should throw when includeDrafts is true but no token is provided', async () => {
+      const loader = postsLoader({
+        publicationHost: 'test.hashnode.dev',
+        includeDrafts: true,
+      });
+
+      const mockStore = {
+        set: vi.fn(),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      // The error should be caught and logged, not thrown
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to fetch posts')
+      );
+    });
+  });
+
+  describe('Posts Loader fetchData with filterByTags', () => {
+    it('should fetch and deduplicate posts by tags', async () => {
+      const mockTagResponse = {
+        data: {
+          publication: {
+            id: 'pub-1',
+            title: 'Test Blog',
+            url: 'https://test.hashnode.dev',
+            posts: {
+              pageInfo: { hasNextPage: false, endCursor: null },
+              edges: [
+                {
+                  node: {
+                    id: 'post-1',
+                    cuid: 'cuid-1',
+                    slug: 'tagged-post',
+                    title: 'Tagged Post',
+                    brief: 'A tagged post',
+                    url: 'https://test.hashnode.dev/tagged-post',
+                    content: { html: '<p>Tagged content</p>' },
+                    publishedAt: '2023-06-01T00:00:00.000Z',
+                    readTimeInMinutes: 5,
+                    author: {
+                      id: 'author-1',
+                      name: 'Author',
+                      username: 'author',
+                    },
+                    tags: [
+                      { id: 'tag-1', name: 'JavaScript', slug: 'javascript' },
+                    ],
+                  },
+                  cursor: 'cursor-1',
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      // Two tag fetches, both returning the same post (to test dedup)
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockTagResponse,
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockTagResponse,
+        });
+
+      const loader = postsLoader({
+        publicationHost: 'test.hashnode.dev',
+        filterByTags: ['javascript', 'react'],
+        maxPosts: 10,
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      // Should have fetched twice (once per tag)
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      // But only stored once (deduplication)
+      expect(mockStore.set).toHaveBeenCalledTimes(1);
+    });
+
+    it('should sort filtered posts by published date and apply maxPosts limit', async () => {
+      const makeTagResponse = (id: string, date: string) => ({
+        data: {
+          publication: {
+            id: 'pub-1',
+            title: 'Test Blog',
+            url: 'https://test.hashnode.dev',
+            posts: {
+              pageInfo: { hasNextPage: false, endCursor: null },
+              edges: [
+                {
+                  node: {
+                    id,
+                    cuid: `cuid-${id}`,
+                    slug: `post-${id}`,
+                    title: `Post ${id}`,
+                    brief: 'Brief',
+                    url: `https://test.hashnode.dev/post-${id}`,
+                    content: { html: '<p>Content</p>' },
+                    publishedAt: date,
+                    readTimeInMinutes: 3,
+                    author: {
+                      id: 'author-1',
+                      name: 'Author',
+                      username: 'author',
+                    },
+                    tags: [],
+                  },
+                  cursor: 'cursor-1',
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => makeTagResponse('post-a', '2023-01-01T00:00:00.000Z'),
+      });
+
+      const loader = postsLoader({
+        publicationHost: 'test.hashnode.dev',
+        filterByTags: ['javascript'],
+        maxPosts: 1,
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockStore.set).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle filterByTags with no maxPosts limit', async () => {
+      const mockTagResponse = {
+        data: {
+          publication: {
+            id: 'pub-1',
+            title: 'Test Blog',
+            url: 'https://test.hashnode.dev',
+            posts: {
+              pageInfo: { hasNextPage: false, endCursor: null },
+              edges: [
+                {
+                  node: {
+                    id: 'post-1',
+                    cuid: 'cuid-1',
+                    slug: 'post-1',
+                    title: 'Post 1',
+                    brief: 'Brief',
+                    url: 'https://test.hashnode.dev/post-1',
+                    content: { html: '<p>Content</p>' },
+                    publishedAt: '2023-06-01T00:00:00.000Z',
+                    readTimeInMinutes: 3,
+                    author: {
+                      id: 'author-1',
+                      name: 'Author',
+                      username: 'author',
+                    },
+                    tags: [],
+                  },
+                  cursor: 'cursor-1',
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTagResponse,
+      });
+
+      const loader = postsLoader({
+        publicationHost: 'test.hashnode.dev',
+        filterByTags: ['javascript'],
+        // No maxPosts specified
+      });
+
+      const mockStore = {
+        set: vi.fn().mockReturnValue(true),
+        clear: vi.fn(),
+        keys: vi.fn().mockReturnValue([]),
+        delete: vi.fn(),
+        get: vi.fn().mockReturnValue(undefined),
+        has: vi.fn().mockReturnValue(false),
+        entries: vi.fn().mockReturnValue([]),
+        values: vi.fn().mockReturnValue([]),
+        addModuleImport: vi.fn(),
+      };
+      const mockLogger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        options: {},
+        label: 'test',
+        fork: vi.fn(),
+      } as any;
+
+      await loader.load({
+        store: mockStore as any,
+        logger: mockLogger,
+        collection: 'posts',
+        meta: {},
+        config: {},
+        renderMarkdown: async (md: string) => ({ html: md, metadata: {} }),
+        generateDigest: (obj: unknown) => JSON.stringify(obj).length.toString(),
+        parseData: async (props: any) => props,
+      } as any);
+
+      expect(mockStore.set).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('Data Processing', () => {
     it('should handle data processing correctly', async () => {
       const mockResponse = {

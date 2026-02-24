@@ -3,7 +3,14 @@ import {
   createHashnodeClient,
   processPostData,
   createLoader,
+  PostsLoader,
 } from '../src/index.js';
+import {
+  calculateDigest,
+  LoaderError,
+  paginateResults,
+  flattenPaginatedResults,
+} from '../src/loaders/base.js';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -264,6 +271,158 @@ describe('Integration Tests', () => {
           publicationHost: 'test.hashnode.dev',
         })
       ).rejects.toThrow('Unknown loader type: unknown');
+    });
+  });
+
+  describe('Base Loader Utilities', () => {
+    it('should calculate digest from string', () => {
+      const digest = calculateDigest('hello world');
+      expect(typeof digest).toBe('string');
+      expect(digest.length).toBeGreaterThan(0);
+    });
+
+    it('should calculate digest from object', () => {
+      const digest = calculateDigest({ key: 'value', num: 42 });
+      expect(typeof digest).toBe('string');
+      expect(digest.length).toBeGreaterThan(0);
+    });
+
+    it('should produce same digest for same content', () => {
+      const digest1 = calculateDigest('test content');
+      const digest2 = calculateDigest('test content');
+      expect(digest1).toBe(digest2);
+    });
+
+    it('should produce different digest for different content', () => {
+      const digest1 = calculateDigest('content a');
+      const digest2 = calculateDigest('content b');
+      expect(digest1).not.toBe(digest2);
+    });
+
+    it('should create LoaderError with code and details', () => {
+      const error = new LoaderError('test error', 'TEST_CODE', {
+        key: 'value',
+      });
+      expect(error.message).toBe('test error');
+      expect(error.code).toBe('TEST_CODE');
+      expect(error.details).toEqual({ key: 'value' });
+      expect(error.name).toBe('LoaderError');
+    });
+  });
+
+  describe('Base Loader Methods via PostsLoader', () => {
+    it('should expose getClient() method', () => {
+      const loader = new PostsLoader({
+        publicationHost: 'test.hashnode.dev',
+      });
+
+      const client = loader.getClient();
+      expect(client).toBeDefined();
+      expect(typeof client.getPosts).toBe('function');
+    });
+
+    it('should expose clearCache() method', () => {
+      const loader = new PostsLoader({
+        publicationHost: 'test.hashnode.dev',
+      });
+
+      // Should not throw
+      expect(() => loader.clearCache()).not.toThrow();
+    });
+
+    it('should expose schema via createLoader()', () => {
+      const loader = new PostsLoader({
+        publicationHost: 'test.hashnode.dev',
+      });
+
+      const astroLoader = loader.createLoader();
+      expect(astroLoader.name).toBe('hashnode-posts');
+      expect(typeof astroLoader.schema).toBe('function');
+      // Call the schema function
+      const schema = (astroLoader.schema as () => unknown)();
+      expect(schema).toBeDefined();
+    });
+  });
+
+  describe('Pagination Utilities', () => {
+    it('should paginate through multiple pages', async () => {
+      let callCount = 0;
+      const generator = paginateResults(async (_cursor?: string) => {
+        callCount++;
+        if (callCount === 1) {
+          return {
+            items: [1, 2, 3],
+            pageInfo: { hasNextPage: true, endCursor: 'cursor-1' },
+          };
+        }
+        return {
+          items: [4, 5],
+          pageInfo: { hasNextPage: false },
+        };
+      });
+
+      const results = await flattenPaginatedResults(generator);
+      expect(results).toEqual([1, 2, 3, 4, 5]);
+      expect(callCount).toBe(2);
+    });
+
+    it('should respect maxItems limit across pages', async () => {
+      let callCount = 0;
+      const generator = paginateResults(async (_cursor?: string) => {
+        callCount++;
+        return {
+          items: [callCount * 10 + 1, callCount * 10 + 2, callCount * 10 + 3],
+          pageInfo: { hasNextPage: true, endCursor: `cursor-${callCount}` },
+        };
+      }, 5);
+
+      const results = await flattenPaginatedResults(generator);
+      expect(results).toHaveLength(5);
+      expect(results).toEqual([11, 12, 13, 21, 22]);
+    });
+
+    it('should stop pagination when empty items returned', async () => {
+      let callCount = 0;
+      const generator = paginateResults(async () => {
+        callCount++;
+        if (callCount === 1) {
+          return {
+            items: [1, 2],
+            pageInfo: { hasNextPage: true, endCursor: 'cursor-1' },
+          };
+        }
+        return {
+          items: [],
+          pageInfo: { hasNextPage: true, endCursor: 'cursor-2' },
+        };
+      });
+
+      const results = await flattenPaginatedResults(generator);
+      expect(results).toEqual([1, 2]);
+      expect(callCount).toBe(2);
+    });
+
+    it('should handle single page of results', async () => {
+      const generator = paginateResults(async () => ({
+        items: ['a', 'b', 'c'],
+        pageInfo: { hasNextPage: false },
+      }));
+
+      const results = await flattenPaginatedResults(generator);
+      expect(results).toEqual(['a', 'b', 'c']);
+    });
+
+    it('should handle maxItems smaller than first page', async () => {
+      const generator = paginateResults(
+        async () => ({
+          items: [1, 2, 3, 4, 5],
+          pageInfo: { hasNextPage: true, endCursor: 'cursor-1' },
+        }),
+        2
+      );
+
+      const results = await flattenPaginatedResults(generator);
+      expect(results).toEqual([1, 2]);
     });
   });
 
