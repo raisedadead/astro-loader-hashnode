@@ -57,8 +57,8 @@ importers:
         specifier: 9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: 16.2.7
-        version: 16.2.7
+        specifier: 16.3.0
+        version: 16.3.0
       prettier:
         specifier: 3.8.1
         version: 3.8.1
@@ -70,13 +70,13 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.0.18
-        version: 4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.1)
+        version: 4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.2)
 
   examples/demo:
     dependencies:
       astro:
         specifier: ^5.17.3
-        version: 5.17.3(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.1)
+        version: 5.17.3(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.2)
       astro-loader-hashnode:
         specifier: workspace:^
         version: link:../../packages/astro-loader-hashnode
@@ -92,7 +92,7 @@ importers:
     dependencies:
       astro:
         specifier: ^5.0.0
-        version: 5.10.0(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.1)
+        version: 5.10.0(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.2)
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -1720,8 +1720,8 @@ packages:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
 
-  commander@14.0.2:
-    resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
+  commander@14.0.3:
+    resolution: {integrity: sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw==}
     engines: {node: '>=20'}
 
   common-ancestor-path@1.0.1:
@@ -2223,6 +2223,7 @@ packages:
   git-raw-commits@4.0.0:
     resolution: {integrity: sha512-ICsMM1Wk8xSGMowkOmPrzo2Fgmfo4bMHLNX6ytHjajRJUqvHOw/TFapQ+QG75c3X/tTDDhOSRPGC52dDbNM8FQ==}
     engines: {node: '>=16'}
+    deprecated: This package is no longer maintained. For the JavaScript API, please use @conventional-changelog/git-client instead.
     hasBin: true
 
   github-slugger@2.0.0:
@@ -2551,8 +2552,8 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  lint-staged@16.2.7:
-    resolution: {integrity: sha512-lDIj4RnYmK7/kXMya+qJsmkRFkGolciXjrsZ6PC25GdTfWOAWetR0ZbsNXRAj1EHHImRSalc+whZFg56F5DVow==}
+  lint-staged@16.3.0:
+    resolution: {integrity: sha512-YVHHy/p6U4/No9Af+35JLh3umJ9dPQnGTvNCbfO/T5fC60us0jFnc+vw33cqveI+kqxIFJQakcMVTO2KM+653A==}
     engines: {node: '>=20.17'}
     hasBin: true
 
@@ -3177,11 +3178,6 @@ packages:
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
-
-  pidtree@0.6.0:
-    resolution: {integrity: sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==}
-    engines: {node: '>=0.10'}
-    hasBin: true
 
   pify@3.0.0:
     resolution: {integrity: sha512-C3FsVNH1udSEX48gGX1xfvwTWfsYWj5U+8/uK15BGzIGrKoUpghX8hWZwa/OFnakBiiVNmBvemTJR5mcy7iPcg==}
@@ -4222,6 +4218,11 @@ packages:
     engines: {node: '>= 14.6'}
     hasBin: true
 
+  yaml@2.8.2:
+    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
+
   yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
@@ -4545,7 +4546,7 @@ snapshots:
       '@commitlint/types': 20.4.0
       git-raw-commits: 4.0.0
       minimist: 1.2.8
-      tinyexec: 1.0.1
+      tinyexec: 1.0.2
 
   '@commitlint/resolve-extends@20.4.0':
     dependencies:
@@ -5484,7 +5485,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.1)
+      vitest: 4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.2)
 
   '@vitest/expect@4.0.18':
     dependencies:
@@ -5495,13 +5496,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.18(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1))':
+  '@vitest/mocker@4.0.18(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.18
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)
+      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)
 
   '@vitest/pretty-format@4.0.18':
     dependencies:
@@ -5529,7 +5530,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.1)
+      vitest: 4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.2)
 
   '@vitest/utils@4.0.18':
     dependencies:
@@ -5669,7 +5670,7 @@ snapshots:
       estree-walker: 3.0.3
       js-tokens: 10.0.0
 
-  astro@5.10.0(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.1):
+  astro@5.10.0(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.2):
     dependencies:
       '@astrojs/compiler': 2.12.2
       '@astrojs/internal-helpers': 0.6.1
@@ -5724,8 +5725,8 @@ snapshots:
       unist-util-visit: 5.0.0
       unstorage: 1.16.0
       vfile: 6.0.3
-      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)
-      vitefu: 1.0.6(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1))
+      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)
+      vitefu: 1.0.6(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2))
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.3
@@ -5769,7 +5770,7 @@ snapshots:
       - uploadthing
       - yaml
 
-  astro@5.17.3(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.1):
+  astro@5.17.3(@types/node@24.0.3)(jiti@2.4.2)(rollup@4.43.0)(typescript@5.9.3)(yaml@2.8.2):
     dependencies:
       '@astrojs/compiler': 2.13.1
       '@astrojs/internal-helpers': 0.7.5
@@ -5826,8 +5827,8 @@ snapshots:
       unist-util-visit: 5.0.0
       unstorage: 1.17.4
       vfile: 6.0.3
-      vite: 6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)
-      vitefu: 1.1.2(vite@6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1))
+      vite: 6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)
+      vitefu: 1.1.2(vite@6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2))
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.3
@@ -6037,7 +6038,7 @@ snapshots:
 
   commander@11.1.0: {}
 
-  commander@14.0.2: {}
+  commander@14.0.3: {}
 
   common-ancestor-path@1.0.1: {}
 
@@ -6923,15 +6924,15 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  lint-staged@16.2.7:
+  lint-staged@16.3.0:
     dependencies:
-      commander: 14.0.2
+      commander: 14.0.3
       listr2: 9.0.5
       micromatch: 4.0.8
       nano-spawn: 2.0.0
-      pidtree: 0.6.0
       string-argv: 0.3.2
-      yaml: 2.8.1
+      tinyexec: 1.0.2
+      yaml: 2.8.2
 
   listr2@9.0.5:
     dependencies:
@@ -7634,8 +7635,6 @@ snapshots:
   picomatch@4.0.2: {}
 
   picomatch@4.0.3: {}
-
-  pidtree@0.6.0: {}
 
   pify@3.0.0: {}
 
@@ -8423,7 +8422,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1):
+  vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.5.0(picomatch@4.0.3)
@@ -8435,9 +8434,9 @@ snapshots:
       '@types/node': 24.0.3
       fsevents: 2.3.3
       jiti: 2.4.2
-      yaml: 2.8.1
+      yaml: 2.8.2
 
-  vite@6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1):
+  vite@6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.5.0(picomatch@4.0.3)
@@ -8449,20 +8448,20 @@ snapshots:
       '@types/node': 24.0.3
       fsevents: 2.3.3
       jiti: 2.4.2
-      yaml: 2.8.1
+      yaml: 2.8.2
 
-  vitefu@1.0.6(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)):
+  vitefu@1.0.6(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)):
     optionalDependencies:
-      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)
+      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)
 
-  vitefu@1.1.2(vite@6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)):
+  vitefu@1.1.2(vite@6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)):
     optionalDependencies:
-      vite: 6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)
+      vite: 6.4.1(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)
 
-  vitest@4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.1):
+  vitest@4.0.18(@types/node@24.0.3)(@vitest/ui@4.0.18)(jiti@2.4.2)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.18
-      '@vitest/mocker': 4.0.18(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1))
+      '@vitest/mocker': 4.0.18(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.18
       '@vitest/runner': 4.0.18
       '@vitest/snapshot': 4.0.18
@@ -8479,7 +8478,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.1)
+      vite: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(yaml@2.8.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.0.3
@@ -8658,6 +8657,8 @@ snapshots:
   yaml@2.7.1: {}
 
   yaml@2.8.1: {}
+
+  yaml@2.8.2: {}
 
   yargs-parser@20.2.9: {}
 
