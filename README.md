@@ -1,25 +1,23 @@
 # Astro Loader Hashnode
 
-A powerful content loader for integrating Hashnode blog posts into your Astro website using the Astro Content Layer API.
+> A content loader for [Astro](https://docs.astro.build/) that pulls blog posts from [Hashnode](https://hashnode.com/) via the [Content Layer API](https://docs.astro.build/en/guides/content-layer/).
+
+## What is this about?
+
+A set of loaders for Astro v5.0+ that fetch posts, series, drafts, and search results from Hashnode's GraphQL API. Supports incremental builds, full TypeScript types, and rendered HTML out of the box.
 
 ## Features
 
-- 🚀 **Built for Astro v5.0+** – Uses the new Content Layer API
-- 📡 **GraphQL Integration** – Leverages Hashnode's GraphQL API
-- 🔄 **Smart Caching** – Incremental updates with change detection
-- 🧵 **Digest-based Incremental Loads** – Skips unchanged entries (faster rebuilds)
-- �️ **Rendered HTML Support** – Each entry includes `rendered.html` for `render(entry)` usage
-- 🧪 **Schema Auto-Exposure** – Loader exports its internal Zod schema (you can override)
-- 📌 **Extra Preferences** – Includes `pinnedToBlog` and `isDelisted` when available
-- 📝 **Full TypeScript Support** – Complete type safety with Zod validation
-- 🏷️ **Rich Metadata** – Author info, tags, SEO/OG data, reading time, TOC, etc.
-- 🎨 **Flexible Content** – HTML always; Markdown for drafts (and optionally for posts when provided by API)
-- 🛡️ **Error Resilient** – Graceful fallbacks and structured loader errors
-- ⚡ **Performance Optimized** – Cursor-based pagination & selective field querying
-- 📚 **Multiple Loaders** – Posts, Series, Drafts, Search (more can be added)
-- 🔐 **Authentication Support** – Access drafts & private data with a token
-
----
+- **Built for Astro v5.0+** – Uses the new Content Layer API
+- **GraphQL Integration** – Leverages Hashnode's GraphQL API
+- **Smart Caching** – Incremental updates with change detection
+- **Digest-based Incremental Loads** – Skips unchanged entries for faster rebuilds
+- **Rendered HTML Support** – Each entry includes `rendered.html` for `render(entry)` usage
+- **Schema Auto-Exposure** – Loader exports its internal Zod schema (you can override)
+- **Full TypeScript Support** – Complete type safety with Zod validation
+- **Rich Metadata** – Author info, tags, SEO/OG data, reading time, TOC, and more
+- **Multiple Loaders** – Posts, Series, Drafts, Search (more can be added)
+- **Authentication Support** – Access drafts and private data with a token
 
 ## Installation
 
@@ -33,15 +31,23 @@ yarn add astro-loader-hashnode
 
 ## Quick Start
 
-### 1. Configure your collection (`src/content.config.ts`)
+### 1. Get your Hashnode API token
+
+1. Go to [Hashnode Developer Settings](https://hashnode.com/settings/developer)
+2. Generate a new Personal Access Token
+3. Add it to your `.env` file as `HASHNODE_TOKEN`
+
+> **Note**: The API token is only required for accessing private content and drafts. Public posts work without authentication.
+
+### 2. Configure your collection (`src/content.config.ts`)
 
 ```ts
-import { defineCollection } from 'astro:content';
-import { hashnodeLoader } from 'astro-loader-hashnode';
+import { defineCollection } from "astro:content";
+import { hashnodeLoader } from "astro-loader-hashnode";
 
 const blog = defineCollection({
   loader: hashnodeLoader({
-    publicationHost: 'yourblog.hashnode.dev', // Required
+    publicationHost: "yourblog.hashnode.dev", // Required
     token: process.env.HASHNODE_TOKEN, // Optional
     maxPosts: 100, // Optional
   }),
@@ -50,7 +56,7 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-### 2. Render a post page (`src/pages/blog/[...slug].astro`)
+### 3. Render a post page (`src/pages/blog/[...slug].astro`)
 
 ```astro
 ---
@@ -96,12 +102,12 @@ const html = data.content.html; // Pre-rendered HTML already available
 Access different types of content with specialized loaders:
 
 ```typescript
-import { defineCollection } from 'astro:content';
-import { postsLoader, seriesLoader, draftsLoader, searchLoader } from 'astro-loader-hashnode';
+import { defineCollection } from "astro:content";
+import { postsLoader, seriesLoader, draftsLoader, searchLoader } from "astro-loader-hashnode";
 
 const blog = defineCollection({
   loader: postsLoader({
-    publicationHost: 'yourblog.hashnode.dev',
+    publicationHost: "yourblog.hashnode.dev",
     maxPosts: 100,
     includeComments: true,
     includeCoAuthors: true,
@@ -110,7 +116,7 @@ const blog = defineCollection({
 
 const series = defineCollection({
   loader: seriesLoader({
-    publicationHost: 'yourblog.hashnode.dev',
+    publicationHost: "yourblog.hashnode.dev",
     includePosts: true,
   }),
 });
@@ -118,15 +124,15 @@ const series = defineCollection({
 // Requires authentication token
 const drafts = defineCollection({
   loader: draftsLoader({
-    publicationHost: 'yourblog.hashnode.dev',
+    publicationHost: "yourblog.hashnode.dev",
     token: process.env.HASHNODE_TOKEN,
   }),
 });
 
 const searchResults = defineCollection({
   loader: searchLoader({
-    publicationHost: 'yourblog.hashnode.dev',
-    searchTerms: ['javascript', 'react', 'astro'],
+    publicationHost: "yourblog.hashnode.dev",
+    searchTerms: ["javascript", "react", "astro"],
   }),
 });
 
@@ -213,17 +219,17 @@ Each post includes comprehensive metadata:
 
 ```typescript
 // src/pages/rss.xml.js
-import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
+import rss from "@astrojs/rss";
+import { getCollection } from "astro:content";
 
 export async function GET(context) {
-  const posts = await getCollection('blog');
+  const posts = await getCollection("blog");
 
   return rss({
-    title: 'My Blog',
-    description: 'My blog powered by Hashnode',
+    title: "My Blog",
+    description: "My blog powered by Hashnode",
     site: context.site,
-    items: posts.map(post => ({
+    items: posts.map((post) => ({
       title: post.data.title,
       pubDate: post.data.publishedAt,
       description: post.data.brief,
@@ -233,23 +239,14 @@ export async function GET(context) {
 }
 ```
 
-## Getting Your Hashnode API Token
-
-1. Go to [Hashnode Developer Settings](https://hashnode.com/settings/developer)
-2. Generate a new Personal Access Token
-3. Add it to your `.env` file as `HASHNODE_TOKEN`
-
-> **Note**: The API token is only required for accessing private content and drafts. Public posts work without
-> authentication.
-
 ## Performance Features
 
-- **Incremental Updates**: Content digests prevent re-processing unchanged posts
-- **Cursor-based Pagination**: Efficiently handles large publications
-- **Error Handling**: Graceful error handling for API limits and network issues
-- **Smart Caching**: Implements fallbacks for network failures
-- **Schema Reuse**: Exposed schema aids IDE inference without extra config
-- **Rendered HTML**: Avoids re-render cost when you just need HTML directly
+- **Incremental Updates** – Content digests prevent re-processing unchanged posts
+- **Cursor-based Pagination** – Efficiently handles large publications
+- **Error Handling** – Graceful error handling for API limits and network issues
+- **Smart Caching** – Implements fallbacks for network failures
+- **Schema Reuse** – Exposed schema aids IDE inference without extra config
+- **Rendered HTML** – Avoids re-render cost when you just need HTML directly
 
 ## Example Project
 
@@ -263,30 +260,8 @@ pnpm run dev
 
 ## Contributing
 
-Contributions are welcome! Please see our [Contributing Guide](./CONTRIBUTING.md) for detailed information on:
-
-- Development setup and workflow
-- Testing guidelines
-- Commit conventions
-- Release process
-- Code style requirements
-
-For quick contributions: fork the repo, make your changes, and submit a pull request!
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE) file for details.
-
-## Related Links
-
-- **[Astro Documentation](https://docs.astro.build/)** - Learn about Astro
-- **[Astro Content Layer](https://docs.astro.build/en/guides/content-layer/)** - Content Layer API guide
-- **[Hashnode](https://hashnode.com/)** - The blogging platform
-- **[Hashnode API Documentation](https://apidocs.hashnode.com/)** - API reference
-- **[Astro Discord](https://astro.build/chat)** - Get help from the community
-
-## Support
-
-- [Issues](https://github.com/raisedadead/astro-loader-hashnode/issues)
-- [Discussions](https://github.com/raisedadead/astro-loader-hashnode/discussions)
-- For security issues, please do not open a public issue—email the maintainer instead.
+ISC License - see [LICENSE](./LICENSE) file for details.
